@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1">
+
+        <ImageView
+
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:id="@+id/app_image"
+            android:src="@drawable/app_icon"
+            android:layout_gravity="center"
+            android:layout_width="138dp"
+            android:layout_height="137dp" />
+        <TextView
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:text="@string/app_name"
+            android:textSize="24sp"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:text="@string/intro1_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/email_pass_layout"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:id="@+id/display_name_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/display_name"
+                android:hint="@string/display_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:id="@+id/email_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/email"
+                android:hint="@string/email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/password_layout"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/password"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleDrawable="@drawable/eye"
+                android:hint="@string/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.AppCompatButton
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:id="@+id/sign_up_btn"
+                android:text="@string/sign_up"
+                android:layout_height="wrap_content" />
+            <android.support.v7.widget.AppCompatButton
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:id="@+id/sign_out_btn"
+                android:visibility="invisible"
+                android:text="@string/sign_out"
+                android:layout_height="wrap_content" />
+            <android.support.v7.widget.AppCompatButton
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:id="@+id/sign_in_btn"
+                android:text="@string/sign_in"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:id="@+id/login_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

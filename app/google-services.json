@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "184997509603",
+    "firebase_url": "https://chat-d6741.firebaseio.com",
+    "project_id": "chat-d6741",
+    "storage_bucket": "chat-d6741.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:184997509603:android:241343edf0a14838",
+        "android_client_info": {
+          "package_name": "com.metacrazie.chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "184997509603-88s281dit5qo8fag52rj5v8qfb80ajof.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.metacrazie.chat",
+            "certificate_hash": "47620D795723F91F96607823906906AC7D7579B8"
+          }
+        },
+        {
+          "client_id": "184997509603-v05sha0cnfu52un37a65eo8c2ojcp0t7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGLt4cgoWRCo0vxlu_GUv8kgxkeEjKHQE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "184997509603-v05sha0cnfu52un37a65eo8c2ojcp0t7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
