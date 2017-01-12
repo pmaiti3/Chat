@@ -1,4 +1,4 @@
-package com.metacrazie.chat;
+package com.metacrazie.chat.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import com.metacrazie.chat.R;
 
 import java.util.ArrayList;
 

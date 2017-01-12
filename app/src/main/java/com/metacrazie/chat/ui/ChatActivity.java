@@ -1,6 +1,7 @@
-package com.metacrazie.chat;
+package com.metacrazie.chat.ui;
 
-import android.content.Intent;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +18,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.metacrazie.chat.R;
+import com.metacrazie.chat.adapters.ChatListAdapter;
+import com.metacrazie.chat.data.DataProvider;
+import com.metacrazie.chat.data.User;
+import com.metacrazie.chat.data.UserDBHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,15 +44,18 @@ public class ChatActivity extends AppCompatActivity {
 
     private String REGISTERED_USERS= "registered_users";
     private String CONVERSATIONS = "conversations";
+    private String MESSAGES =  "messages";
 
     private ChatListAdapter mChatListAdapter;
-
+ //   SharedPreferences mSharedPreferences = getSharedPreferences("pref", MODE_PRIVATE);
     private String TAG = ChatActivity.class.getSimpleName();
 
     private String username;
     private String chatroom;
+    private String mEmail;
     private String temp_key;
     private DatabaseReference root;
+    private UserDBHandler dbHandler;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,20 +65,23 @@ public class ChatActivity extends AppCompatActivity {
         final FloatingActionButton mSendFab = (FloatingActionButton) findViewById(R.id.chat_fab);
         mListView = (ListView)findViewById(R.id.chat_list);
         mMessageText = (EditText)findViewById(R.id.chat_text);
-       // chat_conversation=(TextView)findViewById(R.id.chat_msg_textView);
+
         username = getIntent().getExtras().get("username").toString();
         chatroom = getIntent().getExtras().get("roomname").toString();
         setTitle(chatroom);
 
-        root = FirebaseDatabase.getInstance().getReference().child(CONVERSATIONS).child(chatroom);
+        root = FirebaseDatabase.getInstance().getReference().child(CONVERSATIONS).child(chatroom).child(MESSAGES);
+
+      //  boolean isGroup= mSharedPreferences.getBoolean("isGroup", true);
+        //TODO open add users button
 
         mListView = (ListView)findViewById(R.id.chat_list);
-      //  mArrayAdapter = new ArrayAdapter<>(this, R.layout.chat_item, mMessageList);
-      //  mListView.setAdapter(mArrayAdapter);
-
-        //TODO
         mChatListAdapter=new ChatListAdapter(this, mUserList, mMessageList);
         mListView.setAdapter(mChatListAdapter);
+
+        //Initialise database
+        dbHandler = new UserDBHandler(this);
+
 
         mSendFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +96,19 @@ public class ChatActivity extends AppCompatActivity {
                 newMap.put("user", username);
                 newMap.put("msg", mMessageText.getText().toString());
                 message_root.updateChildren(newMap);
+
+                //TODO Check if the chat is private or group
+                /*
+                User user = new User("", chatroom, "" , username+" : "+mMessageText.getText().toString());
+                dbHandler.updateUser(user);
+                Log.d(TAG, "Updated database: "+chatroom);
+                */
+
+                ContentValues values = new ContentValues();
+                values.put(DataProvider.KEY_LAST_MESSAGE,  username+" : "+mMessageText.getText().toString());
+                getContentResolver().update(DataProvider.CONTENT_URI, values, DataProvider.KEY_USERNAME+"=?",new String[] {chatroom});
+                Log.d(TAG, "added new msg via CP");
+
 
                 mMessageText.setText("");
             }

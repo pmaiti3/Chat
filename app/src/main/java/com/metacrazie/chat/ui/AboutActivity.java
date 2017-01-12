@@ -1,7 +1,8 @@
-package com.metacrazie.chat;
+package com.metacrazie.chat.ui;
 
 import android.os.Bundle;
 
+import com.metacrazie.chat.R;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.aboutlibraries.ui.LibsActivity;
@@ -16,6 +17,8 @@ public class AboutActivity extends LibsActivity {
 
         setIntent(new LibsBuilder()
                 .withAboutIconShown(true)
+                .withActivityTitle(getString(R.string.nav_about))
+                .withAboutAppName(getString(R.string.app_name))
                 .withAboutVersionShown(true)
                 .withAboutDescription(getString(R.string.intro1_desc))
                 //provide a style (optional) (LIGHT, DARK, LIGHT_DARK_TOOLBAR)

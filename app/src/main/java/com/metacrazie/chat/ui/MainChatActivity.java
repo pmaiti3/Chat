@@ -1,9 +1,11 @@
-package com.metacrazie.chat;
+package com.metacrazie.chat.ui;
 
+import android.app.SearchManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -28,6 +30,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.metacrazie.chat.R;
+import com.metacrazie.chat.SearchTask;
+import com.metacrazie.chat.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,12 +48,14 @@ public class MainChatActivity extends AppCompatActivity
     private ListView mListView;
     private Button mAddRoomBtn;
     private EditText mRoomEditText;
+    private String pref="pref";
     private TextView mNavHeaderText;
     private ArrayAdapter<String> mArrayAdapter;
     private ArrayList<String> list_of_rooms= new ArrayList<>();
     private String name;
     private String REGISTERED_USERS= "registered_users";
     private String CONVERSATIONS = "conversations";
+    private String CHAT_USERS="chart_auth_users";
     private DatabaseReference root= FirebaseDatabase.getInstance().getReference().child(CONVERSATIONS);
 
 
@@ -58,7 +65,6 @@ public class MainChatActivity extends AppCompatActivity
         setContentView(R.layout.activity_main_chat);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -79,7 +85,7 @@ public class MainChatActivity extends AppCompatActivity
         mArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list_of_rooms);
         mListView.setAdapter(mArrayAdapter);
 
-        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+        final FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
         assert user != null;
         name = user.getDisplayName();
         Log.d(TAG, name);
@@ -90,9 +96,18 @@ public class MainChatActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
+                SharedPreferences mSharedPreferences = getSharedPreferences(pref, MODE_PRIVATE);
+                SharedPreferences.Editor editor = mSharedPreferences.edit();
+                editor.putBoolean("isGroup", true);
+                editor.apply();
+
                 Map<String, Object> map=new HashMap<String, Object>();
                 map.put(mRoomEditText.getText().toString(), "");
                 root.updateChildren(map);
+
+                Map<String, Object> users = new HashMap<String, Object>();
+                users.put(user.getDisplayName(), "");
+                root.child(mRoomEditText.getText().toString()).child(CHAT_USERS).updateChildren(users);
 
                 mRoomEditText.setText("");
             }
@@ -106,7 +121,9 @@ public class MainChatActivity extends AppCompatActivity
 
                 Iterator i = dataSnapshot.getChildren().iterator();
                 while(i.hasNext()){
-                    set.add(((DataSnapshot)i.next()).getKey());
+                    DataSnapshot mDataSnapshot =(DataSnapshot) i.next();
+                    if (mDataSnapshot.child(CHAT_USERS).hasChild(user.getDisplayName()))
+                    set.add((mDataSnapshot).getKey());
                 }
 
                 list_of_rooms.clear();
@@ -146,7 +163,28 @@ public class MainChatActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_chat, menu);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                new SearchTask(getApplicationContext(), s).execute();
+                Log.d(TAG, "onQueryTextSubmit "+s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                Log.d(TAG, "onQueryTextChange "+s);
+                return false;
+            }
+        });
+
         return true;
+
     }
 
     @Override
@@ -157,7 +195,8 @@ public class MainChatActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_search) {
+
             return true;
         }
 
@@ -171,11 +210,17 @@ public class MainChatActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_chat) {
+            Intent intent = new Intent(MainChatActivity.this, MainChatActivity.class);
+            startActivity(intent);
+            finish();
             // Handle the camera action
         } else if (id == R.id.nav_friends) {
+            Intent intent = new Intent(MainChatActivity.this, Contacts.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_settings) {
-
+            Intent intent = new Intent(MainChatActivity.this, SettingsActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_about) {
             Intent intent = new Intent(MainChatActivity.this, AboutActivity.class);
             startActivity(intent);

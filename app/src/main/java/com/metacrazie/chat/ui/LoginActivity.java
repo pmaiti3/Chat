@@ -1,7 +1,6 @@
-package com.metacrazie.chat;
+package com.metacrazie.chat.ui;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -9,20 +8,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.metacrazie.chat.R;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -115,6 +111,16 @@ public class LoginActivity extends AppCompatActivity {
                                                 Map<String, Object> map = new HashMap<String, Object>();
                                                 map.put(displayName, userList.push().getKey());
                                                 userList.updateChildren(map);
+
+                                                DatabaseReference userDetails = FirebaseDatabase.getInstance().getReference().child(REGISTERED_USERS).child(displayName);
+
+                                                Map<String, Object> map2 = new HashMap<String, Object>();
+                                                map2.put("username", displayName);
+                                                map2.put("email",mEmail);
+                                                map2.put("password",mPassword);
+                                                map2.put("uid", user.getUid());
+                                                Log.d(TAG, "details added to firebase");
+                                                userDetails.updateChildren(map2);
                                                 Log.d(TAG, "User profile updated.");
                                                 isUserProfileUpdated = true;
                                             }
@@ -146,6 +152,9 @@ public class LoginActivity extends AppCompatActivity {
                         else {
 
                             flag=0;
+
+
+
                             startChat(user);
                             //do something
                         }
