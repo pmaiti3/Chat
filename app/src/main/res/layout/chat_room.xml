@@ -33,7 +33,6 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         fab:fab_addButtonPlusIconColor="@android:color/white"
-        android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
         fab:fab_labelsPosition="left">
 
