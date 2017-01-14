@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-        <TextView
-            android:padding="@dimen/activity_horizontal_margin"
-            android:id="@+id/textView"
+        <LinearLayout
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
 
+                <TextView
+                    android:id="@+id/textView"
+                    style="@style/HeaderTextStyle"
+                    android:layout_marginBottom="@dimen/padding_5"
+                    android:text="@string/alert_new_chat_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-</LinearLayout>
+                <TextView
+                    android:id="@+id/main_last_msg_textview"
+                    android:text="@string/placeholher_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+
+</RelativeLayout>

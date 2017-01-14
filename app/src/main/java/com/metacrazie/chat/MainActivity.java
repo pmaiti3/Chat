@@ -1,4 +1,4 @@
-package com.metacrazie.chat.ui;
+package com.metacrazie.chat;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,7 +15,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.metacrazie.chat.R;
+import com.metacrazie.chat.main.MainChatActivity;
+import com.metacrazie.chat.ui.IntroActivity;
+import com.metacrazie.chat.ui.LoginActivity;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -21,13 +21,15 @@ public class ChatListAdapter extends BaseAdapter {
     private Activity mContext;
     private ArrayList<String> mUsername;
     private ArrayList<String> mMessage;
+    private ArrayList<String> mTime;
 
-    public ChatListAdapter(Activity context, ArrayList username, ArrayList message)
+    public ChatListAdapter(Activity context, ArrayList username, ArrayList message, ArrayList time)
     {
         super();
         mContext=context;
         mUsername=username;
         mMessage=message;
+        mTime = time;
 
     }
 
@@ -49,6 +51,7 @@ public class ChatListAdapter extends BaseAdapter {
     private class ViewHolder{
         TextView mUserTextView;
         TextView mMessageTextView;
+        TextView mTimeTextView;
     }
 
     @Override
@@ -62,6 +65,7 @@ public class ChatListAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.mUserTextView = (TextView) convertView.findViewById(R.id.chat_user);
             holder.mMessageTextView = (TextView) convertView.findViewById(R.id.chat_message);
+            holder.mTimeTextView = (TextView) convertView.findViewById(R.id.chat_time);
             convertView.setTag(holder);
         }
         else
@@ -70,6 +74,7 @@ public class ChatListAdapter extends BaseAdapter {
         }
 
         holder.mUserTextView.setText(mUsername.get(i));
+        holder.mTimeTextView.setText(mTime.get(i));
         holder.mMessageTextView.setText(mMessage.get(i));
 
         return convertView;

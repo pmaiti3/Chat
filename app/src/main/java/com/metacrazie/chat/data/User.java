@@ -11,6 +11,7 @@ public class User {
     private String mEmail;
     private String mProfileImage;
     private String mMessage;
+    private String mRoom;
 
     //Empty constructor
     public User(){
@@ -18,11 +19,12 @@ public class User {
     }
 
     //Parameterised constructor
-    public User(String id, String username, String email,String message){
+    public User(String id, String username, String email,String message, String room){
         mUID = id;
         mUsername = username;
         mEmail = email;
         mMessage = message;
+        mRoom = room;
     }
 
     public String getID(){
@@ -63,4 +65,11 @@ public class User {
         mMessage = message;
     }
 
+    public String getRoom(){
+        return mRoom;
+    }
+
+    public void setRoom(String room){
+        mRoom = room;
+    }
 }

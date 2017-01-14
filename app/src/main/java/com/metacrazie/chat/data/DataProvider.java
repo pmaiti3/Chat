@@ -31,6 +31,7 @@ public class DataProvider extends ContentProvider{
     public static final String KEY_USERNAME = "_username";
     public static final String KEY_EMAIL = "_email";
     public static final String KEY_LAST_MESSAGE = "_lastMessage";
+    public static final String KEY_ROOM = "_room";
 
 
     private UserDBHandler database;
@@ -182,7 +183,7 @@ public class DataProvider extends ContentProvider{
     private void checkColumns(String[] projection) {
         String[] available = { DataTable.KEY_UID,
                 DataTable.KEY_USERNAME, DataTable.KEY_EMAIL,
-                DataTable.KEY_LAST_MESSAGE };
+                DataTable.KEY_LAST_MESSAGE, DataTable.KEY_ROOM };
         if (projection != null) {
             HashSet<String> requestedColumns = new HashSet<String>(
                     Arrays.asList(projection));

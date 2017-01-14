@@ -1,10 +1,9 @@
-package com.metacrazie.chat.ui;
+package com.metacrazie.chat.main;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -15,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -23,10 +21,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.metacrazie.chat.R;
 import com.metacrazie.chat.adapters.ContactsListAdapter;
 import com.metacrazie.chat.data.DataProvider;
-import com.metacrazie.chat.data.User;
 import com.metacrazie.chat.data.UserDBHandler;
 
 import java.util.ArrayList;
@@ -120,25 +118,43 @@ public class Contacts extends AppCompatActivity {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int i) {
 
-                                    Map<String, Object> map = new HashMap<String, Object>();
-                                    map.put(startNewChatUser, "");
-                                    newRoom.updateChildren(map);
+                                    final String roomName = RoomName.generate_room_name(startNewChatUser, FirebaseAuth
+                                    .getInstance().getCurrentUser().getDisplayName());
 
-                                    Map<String, Object> users = new HashMap<String, Object>();
-                                    users.put(FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), "");
-                                    users.put(startNewChatUser,  "");
-                                    newRoom.child(startNewChatUser).child(CHAT_USERS).updateChildren(users);
 
+                                    if (!dbHandler.hasRoom(roomName)){
+
+                                        Log.d(TAG, "no existing room, add new room");
+
+                                        Map<String, Object> map = new HashMap<String, Object>();
+                                        map.put(roomName, "");
+                                        newRoom.updateChildren(map);
+
+                                        Map<String, Object> users = new HashMap<String, Object>();
+                                        users.put(FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), "");
+                                        users.put(startNewChatUser,  "");
+                                        newRoom.child(roomName).child(CHAT_USERS).updateChildren(users);
+
+                                        ContentValues values = new ContentValues();
+                                        values.put(DataProvider.KEY_USERNAME,startNewChatUser);
+                                        values.put(DataProvider.KEY_EMAIL, userEmail);
+                                        values.put(DataProvider.KEY_ROOM, roomName);
+                                        getContentResolver().insert(DataProvider.CONTENT_URI, values);
+                                        Log.d(TAG, "added new user via CP");
+
+                                    }
                                     /*
                                     User chatUser = new User("user", startNewChatUser, userEmail, "random");
                                     dbHandler.addUser(chatUser);
-                                    */
+
 
                                     ContentValues values = new ContentValues();
                                     values.put(DataProvider.KEY_USERNAME,startNewChatUser);
                                     values.put(DataProvider.KEY_EMAIL, userEmail);
-                                    Uri uri = getContentResolver().insert(DataProvider.CONTENT_URI, values);
+                                    values.put(DataProvider.KEY_ROOM, roomName);
+                                    getContentResolver().insert(DataProvider.CONTENT_URI, values);
                                     Log.d(TAG, "added new user via CP");
+                                    */
 
                                     SharedPreferences mSharedPreferences = getSharedPreferences(pref, MODE_PRIVATE);
                                     SharedPreferences.Editor editor = mSharedPreferences.edit();
@@ -147,7 +163,7 @@ public class Contacts extends AppCompatActivity {
 
                                     Intent intent = new Intent(Contacts.this, ChatActivity.class);
                                     intent.putExtra("username", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-                                    intent.putExtra("roomname", startNewChatUser);
+                                    intent.putExtra("roomname", roomName);
                                     intent.putExtra("email", userEmail);
                                     startActivity(intent);
 
@@ -163,14 +179,15 @@ public class Contacts extends AppCompatActivity {
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .show();
 
-                            }else{
-                            Intent intent = new Intent(Contacts.this, ChatActivity.class);
-                            intent.putExtra("username", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-                            intent.putExtra("roomname", startNewChatUser);
-                            startActivity(intent);
-                            }
-                    }
-                });
+                }else{
+                    Intent intent = new Intent(Contacts.this, ChatActivity.class);
+                    intent.putExtra("username", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                    intent.putExtra("roomname", RoomName.generate_room_name(startNewChatUser,
+                            FirebaseAuth.getInstance().getCurrentUser().getDisplayName() ));
+                    startActivity(intent);
+                }
+            }
+        });
 
 
 
@@ -188,7 +205,7 @@ public class Contacts extends AppCompatActivity {
             mEmailList.add((String)((DataSnapshot)i.next()).getValue());
 
             i.next();
-            i.next();
+
 
             String sUserName= (String)((DataSnapshot)i.next()).getValue();
             mUsernameList.add(sUserName);

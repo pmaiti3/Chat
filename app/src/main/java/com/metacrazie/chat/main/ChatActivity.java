@@ -1,7 +1,6 @@
-package com.metacrazie.chat.ui;
+package com.metacrazie.chat.main;
 
 import android.content.ContentValues;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -21,10 +20,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.metacrazie.chat.R;
 import com.metacrazie.chat.adapters.ChatListAdapter;
 import com.metacrazie.chat.data.DataProvider;
-import com.metacrazie.chat.data.User;
 import com.metacrazie.chat.data.UserDBHandler;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -41,6 +41,7 @@ public class ChatActivity extends AppCompatActivity {
     private ArrayAdapter<String> mArrayAdapter;
     private ArrayList<String> mMessageList = new ArrayList<>() ;
     private ArrayList<String> mUserList = new ArrayList<>();
+    private ArrayList<String> mTimeList = new ArrayList<>();
 
     private String REGISTERED_USERS= "registered_users";
     private String CONVERSATIONS = "conversations";
@@ -66,9 +67,11 @@ public class ChatActivity extends AppCompatActivity {
         mListView = (ListView)findViewById(R.id.chat_list);
         mMessageText = (EditText)findViewById(R.id.chat_text);
 
+        scrollMyListViewToBottom();
+
         username = getIntent().getExtras().get("username").toString();
         chatroom = getIntent().getExtras().get("roomname").toString();
-        setTitle(chatroom);
+        setTitle(RoomName.display_room_name(username, chatroom));
 
         root = FirebaseDatabase.getInstance().getReference().child(CONVERSATIONS).child(chatroom).child(MESSAGES);
 
@@ -76,7 +79,7 @@ public class ChatActivity extends AppCompatActivity {
         //TODO open add users button
 
         mListView = (ListView)findViewById(R.id.chat_list);
-        mChatListAdapter=new ChatListAdapter(this, mUserList, mMessageList);
+        mChatListAdapter=new ChatListAdapter(this, mUserList, mMessageList, mTimeList);
         mListView.setAdapter(mChatListAdapter);
 
         //Initialise database
@@ -87,30 +90,41 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Map<String, Object> map=new HashMap<String, Object>();
-                temp_key=root.push().getKey();
-                root.updateChildren(map);
+                if (!mMessageText.getText().toString().trim().equals("")) {
+                    Map<String, Object> map = new HashMap<String, Object>();
 
-                DatabaseReference message_root= root.child(temp_key);
-                Map<String, Object> newMap = new HashMap<String, Object>();
-                newMap.put("user", username);
-                newMap.put("msg", mMessageText.getText().toString());
-                message_root.updateChildren(newMap);
+                    temp_key = root.push().getKey();
+                    root.updateChildren(map);
 
-                //TODO Check if the chat is private or group
+                    DatabaseReference message_root = root.child(temp_key);
+                    Map<String, Object> newMap = new HashMap<String, Object>();
+                    newMap.put("user", username);
+                    newMap.put("msg", mMessageText.getText().toString().trim());
+
+
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd:MM:yyyy:hh:mm:ss");
+                    String format = simpleDateFormat.format(new Date());
+                    format = format.substring(11, 16);
+                    Log.d("MainActivity", "Current Timestamp: " + format);
+
+                    newMap.put("time", format);
+
+                    message_root.updateChildren(newMap);
+                    //TODO Check if the chat is private or group
                 /*
                 User user = new User("", chatroom, "" , username+" : "+mMessageText.getText().toString());
                 dbHandler.updateUser(user);
                 Log.d(TAG, "Updated database: "+chatroom);
                 */
 
-                ContentValues values = new ContentValues();
-                values.put(DataProvider.KEY_LAST_MESSAGE,  username+" : "+mMessageText.getText().toString());
-                getContentResolver().update(DataProvider.CONTENT_URI, values, DataProvider.KEY_USERNAME+"=?",new String[] {chatroom});
-                Log.d(TAG, "added new msg via CP");
+                    ContentValues values = new ContentValues();
+                    values.put(DataProvider.KEY_LAST_MESSAGE, username + " : " + mMessageText.getText().toString());
+                    getContentResolver().update(DataProvider.CONTENT_URI, values, DataProvider.KEY_USERNAME + "=?", new String[]{RoomName.display_room_name(username, chatroom)});
+                    Log.d(TAG, "added new msg via CP");
+                }
 
+                    mMessageText.setText("");
 
-                mMessageText.setText("");
             }
         });
 
@@ -149,10 +163,22 @@ public class ChatActivity extends AppCompatActivity {
         while (i.hasNext()){
 
             mMessageList.add((String) ((DataSnapshot)i.next()).getValue());
+            mTimeList.add((String) ((DataSnapshot)i.next()).getValue());
             mUserList.add((String) ((DataSnapshot)i.next()).getValue());
 
             mChatListAdapter.notifyDataSetChanged();
 
+            scrollMyListViewToBottom();
         }
+    }
+
+    private void scrollMyListViewToBottom() {
+        mListView.post(new Runnable() {
+            @Override
+            public void run() {
+                // Select the last row so it will scroll into view...
+                mListView.setSelection(mChatListAdapter.getCount() - 1);
+            }
+        });
     }
 }

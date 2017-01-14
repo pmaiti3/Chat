@@ -6,7 +6,8 @@
     android:layout_height="match_parent">
 
     <ListView
-        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:id="@+id/contacts_listview"
         android:clickable="true"
         android:layout_width="match_parent"

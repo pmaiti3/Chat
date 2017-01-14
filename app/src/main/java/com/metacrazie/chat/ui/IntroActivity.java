@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 
 import com.github.paolorotolo.appintro.AppIntro2;
 import com.github.paolorotolo.appintro.AppIntroFragment;
+import com.metacrazie.chat.MainActivity;
 import com.metacrazie.chat.R;
 
 /**

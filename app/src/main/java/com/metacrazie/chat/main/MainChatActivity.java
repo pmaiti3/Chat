@@ -1,6 +1,7 @@
-package com.metacrazie.chat.ui;
+package com.metacrazie.chat.main;
 
 import android.app.SearchManager;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -32,7 +34,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.metacrazie.chat.R;
 import com.metacrazie.chat.SearchTask;
-import com.metacrazie.chat.SettingsActivity;
+import com.metacrazie.chat.data.DataProvider;
+import com.metacrazie.chat.ui.SettingsActivity;
+import com.metacrazie.chat.adapters.ChatRoomAdapter;
+import com.metacrazie.chat.data.User;
+import com.metacrazie.chat.data.UserDBHandler;
+import com.metacrazie.chat.ui.AboutActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,17 +52,29 @@ public class MainChatActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private String TAG= MainChatActivity.class.getSimpleName();
+
     private ListView mListView;
     private Button mAddRoomBtn;
     private EditText mRoomEditText;
+
     private String pref="pref";
+
     private TextView mNavHeaderText;
+
     private ArrayAdapter<String> mArrayAdapter;
+    private ChatRoomAdapter mChatAdapter;
+
+    private String roomName;
     private ArrayList<String> list_of_rooms= new ArrayList<>();
+    private ArrayList<String> list_of_messages = new ArrayList<>();
+
     private String name;
     private String REGISTERED_USERS= "registered_users";
     private String CONVERSATIONS = "conversations";
     private String CHAT_USERS="chart_auth_users";
+
+    private UserDBHandler dbHandler = new UserDBHandler(this);
+
     private DatabaseReference root= FirebaseDatabase.getInstance().getReference().child(CONVERSATIONS);
 
 
@@ -66,24 +85,39 @@ public class MainChatActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //DrawerLayout
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        //Navigation
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         mListView = (ListView)findViewById(R.id.chatlistView);
-        mAddRoomBtn =(Button)findViewById(R.id.btn_add_room);
+
         mRoomEditText = (EditText)findViewById(R.id.room_name_edittext);
 
         View headerLayout= navigationView.getHeaderView(0);
         mNavHeaderText = (TextView) headerLayout.findViewById(R.id.nav_header_textView);
 
-        mArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list_of_rooms);
+        FloatingActionButton groupFab =  (FloatingActionButton)findViewById(R.id.group_fab);
+        FloatingActionButton privateFab = (FloatingActionButton)findViewById(R.id.private_fab);
+        groupFab.setTitle("Start Group Chat");
+        privateFab.setTitle("Start Private Chat");
+
+/*
+        mArrayAdapter = new ArrayAdapter<String>(this, R.layout.chat_room_item, list_of_rooms);
         mListView.setAdapter(mArrayAdapter);
+*/
+
+        //custom adapter with data from content provider using loader
+
+            mChatAdapter = new ChatRoomAdapter(this, list_of_rooms, list_of_messages);
+            mListView.setAdapter(mChatAdapter);
+
 
         final FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
         assert user != null;
@@ -92,7 +126,7 @@ public class MainChatActivity extends AppCompatActivity
 
         mNavHeaderText.setText(name);
 
-        mAddRoomBtn.setOnClickListener(new View.OnClickListener() {
+        groupFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -102,7 +136,7 @@ public class MainChatActivity extends AppCompatActivity
                 editor.apply();
 
                 Map<String, Object> map=new HashMap<String, Object>();
-                map.put(mRoomEditText.getText().toString(), "");
+                map.put(mRoomEditText.getText().toString(), root.push().getKey());
                 root.updateChildren(map);
 
                 Map<String, Object> users = new HashMap<String, Object>();
@@ -117,19 +151,43 @@ public class MainChatActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+                list_of_messages.clear();
                 Set<String> set= new HashSet<String>();
 
                 Iterator i = dataSnapshot.getChildren().iterator();
                 while(i.hasNext()){
                     DataSnapshot mDataSnapshot =(DataSnapshot) i.next();
-                    if (mDataSnapshot.child(CHAT_USERS).hasChild(user.getDisplayName()))
-                    set.add((mDataSnapshot).getKey());
+                    if (mDataSnapshot.child(CHAT_USERS).hasChild(user.getDisplayName())) {
+
+                        roomName= mDataSnapshot.getKey();
+                        if (!dbHandler.hasRoom(roomName)){
+
+                            //CHANGE
+
+                            ContentValues values = new ContentValues();
+                            values.put(DataProvider.KEY_USERNAME, RoomName.display_room_name(user.getDisplayName(),roomName));
+                            values.put(DataProvider.KEY_ROOM, roomName);
+                            getContentResolver().insert(DataProvider.CONTENT_URI, values);
+                            Log.d(TAG, "added new user via CP");
+                        }
+                        String getName= RoomName.display_room_name(user.getDisplayName(),roomName);
+                        set.add(getName);
+                        String string = updateRoom((mDataSnapshot).getKey());
+                        list_of_messages.add(string);
+
+                    }
+
                 }
 
                 list_of_rooms.clear();
                 list_of_rooms.addAll(set);
+               // list_of_messages.add("Random");
 
-                mArrayAdapter.notifyDataSetChanged();
+                    if (list_of_rooms.size()!=0){
+                        mChatAdapter.notifyDataSetChanged();
+                    }
+
+               // mArrayAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -142,11 +200,27 @@ public class MainChatActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent=new Intent(MainChatActivity.this, ChatActivity.class);
-                intent.putExtra("roomname", ((TextView)view).getText().toString());
+                String user1= ((TextView)view.findViewById(R.id.textView)).getText().toString();
+                intent.putExtra("roomname", RoomName.generate_room_name(user1, name));
                 intent.putExtra("username", name);
                 startActivity(intent);
             }
         });
+    }
+
+    public String updateRoom(String name){
+
+        //TODO use cursor here
+        if (dbHandler.hasUser(name)) {
+            User user = dbHandler.getUser(name);
+            if (user.getMessage() != null)
+                return user.getMessage();
+            else
+                return null;
+        }
+        else
+            return "random";
+
     }
 
     @Override
@@ -210,6 +284,9 @@ public class MainChatActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_chat) {
+
+            //TODO check which activity is running
+
             Intent intent = new Intent(MainChatActivity.this, MainChatActivity.class);
             startActivity(intent);
             finish();
@@ -230,4 +307,6 @@ public class MainChatActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
 }

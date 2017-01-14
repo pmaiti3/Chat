@@ -1,10 +1,14 @@
 package com.metacrazie.chat.widget;
 
 import android.app.LauncherActivity;
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -20,6 +24,8 @@ import com.metacrazie.chat.data.DataTable;
 import com.metacrazie.chat.data.User;
 import com.metacrazie.chat.data.UserDBHandler;
 
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +34,7 @@ import java.util.List;
  * Created by praty on 10/01/2017.
  */
 
-public class WidgetService extends RemoteViewsService {
+public class WidgetService extends RemoteViewsService{
 
     private static final String TAG = WidgetService.class.getSimpleName();
     private String REGISTERED_USERS = "registered_users";
@@ -48,9 +54,11 @@ public class WidgetService extends RemoteViewsService {
     }
 
 
-    class WidgetItemRemoteView implements RemoteViewsService.RemoteViewsFactory{
+
+    class WidgetItemRemoteView implements RemoteViewsService.RemoteViewsFactory {
         Context mContext;
         Cursor mCursor;
+        CursorLoader mCursorLoader;
         private ArrayList<String> userList = new ArrayList<>();
         private ArrayList<String> messageList = new ArrayList<>();
         Intent mIntent;
@@ -68,8 +76,8 @@ public class WidgetService extends RemoteViewsService {
 
         private void populateListView() {
             for (int i = 0; i < getCount(); i++) {
-                userList.add("User "+i);
-                messageList.add("Message by user "+i);
+                userList.add("User " + i);
+                messageList.add("Message by user " + i);
                 Log.d(TAG, "Added list items");
             }
 
@@ -78,8 +86,7 @@ public class WidgetService extends RemoteViewsService {
         @Override
         public void onCreate() {
 
-        //    populateListView();
-
+            //    populateListView();
 
 /*            mCursor = getContentResolver().query(CONTENT_URI,
                     new String[]{DataTable.KEY_UID, DataTable.KEY_USERNAME, DataTable.KEY_EMAIL, DataTable.KEY_LAST_MESSAGE},
@@ -104,9 +111,7 @@ public class WidgetService extends RemoteViewsService {
                 }
 */
 
-            allUsers =  mDBHelper.getAllUsers();
-
-
+            allUsers = mDBHelper.getAllUsers();
 
 
         }
@@ -114,7 +119,7 @@ public class WidgetService extends RemoteViewsService {
         @Override
         public void onDataSetChanged() {
             UserDBHandler DBHelper = new UserDBHandler(mContext);
-            allUsers =  DBHelper.getAllUsers();
+            allUsers = DBHelper.getAllUsers();
         }
 
         @Override
@@ -125,11 +130,10 @@ public class WidgetService extends RemoteViewsService {
         @Override
         public int getCount() {
 
-            if (allUsers!=null){
-                Log.d(TAG, allUsers.size()+" is size");
+            if (allUsers != null) {
+                Log.d(TAG, allUsers.size() + " is size");
                 return allUsers.size();
-            }
-            else
+            } else
                 return 0;
 
         }
@@ -146,7 +150,7 @@ public class WidgetService extends RemoteViewsService {
             String message = newUser.getMessage();
             remoteView.setTextViewText(R.id.widget_user, user);
             remoteView.setTextViewText(R.id.widget_message, message);
-            Log.d(TAG, "set remote view items: "+user+","+message);
+            Log.d(TAG, "set remote view items: " + user + "," + message);
 
             return remoteView;
         }
@@ -170,6 +174,8 @@ public class WidgetService extends RemoteViewsService {
         public boolean hasStableIds() {
             return false;
         }
+
+
     }
 
 

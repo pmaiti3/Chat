@@ -15,10 +15,11 @@ public class DataTable {
     public static final String KEY_USERNAME = "_username";
     public static final String KEY_EMAIL = "_email";
     public static final String KEY_LAST_MESSAGE = "_lastMessage";
+    public static final String KEY_ROOM = "_room";
 
     private static final String CREATE_USER_TABLE = "CREATE TABLE if not exists " + TABLE_USER + "("
             + KEY_UID + " TEXT," + KEY_USERNAME + " TEXT,"
-            + KEY_EMAIL + " TEXT," + KEY_LAST_MESSAGE + " TEXT" + ")";
+            + KEY_EMAIL + " TEXT," + KEY_LAST_MESSAGE + " TEXT,"  + KEY_ROOM + " TEXT"+ ")";
 
     public static void onCreate(SQLiteDatabase database) {
         database.execSQL(CREATE_USER_TABLE);

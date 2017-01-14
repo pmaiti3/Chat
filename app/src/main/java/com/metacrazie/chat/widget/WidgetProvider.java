@@ -1,18 +1,16 @@
 package com.metacrazie.chat.widget;
 
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.SystemClock;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import com.metacrazie.chat.R;
-import com.metacrazie.chat.ui.MainChatActivity;
+import com.metacrazie.chat.main.MainChatActivity;
 
 /**
  * Implementation of App Widget functionality.

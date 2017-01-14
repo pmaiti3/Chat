@@ -15,7 +15,7 @@ import java.util.List;
 
 public class UserDBHandler extends SQLiteOpenHelper{
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "user_DB";
 
     private static final String TABLE_USER = "user_table";
@@ -24,6 +24,7 @@ public class UserDBHandler extends SQLiteOpenHelper{
     private static final String KEY_USERNAME = "_username";
     private static final String KEY_EMAIL = "_email";
     private static final String KEY_LAST_MESSAGE = "_lastMessage";
+    private static final String KEY_ROOM = "_room";
 
 
     public UserDBHandler(Context context) {
@@ -65,6 +66,7 @@ public class UserDBHandler extends SQLiteOpenHelper{
         values.put(KEY_USERNAME, user.getUsername());
         values.put(KEY_EMAIL, user.getEmail());
         values.put(KEY_LAST_MESSAGE, user.getMessage());
+        values.put(KEY_ROOM, user.getRoom());
 
         sqLiteDatabase.insert(TABLE_USER, null, values);
         sqLiteDatabase.close();
@@ -76,12 +78,12 @@ public class UserDBHandler extends SQLiteOpenHelper{
 
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         Cursor cursor = sqLiteDatabase.query(TABLE_USER, new String[]
-                { KEY_UID, KEY_USERNAME, KEY_EMAIL,  KEY_LAST_MESSAGE}, KEY_USERNAME +" =?", new String[]{username}, null, null, null);
+                { KEY_UID, KEY_USERNAME, KEY_EMAIL,  KEY_LAST_MESSAGE, KEY_ROOM}, KEY_USERNAME +" =?", new String[]{username}, null, null, null);
 
         if (cursor!=null)
             cursor.moveToFirst();
 
-        User user = new User(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3));
+        User user = new User(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
         return user;
 
     }
@@ -102,6 +104,7 @@ public class UserDBHandler extends SQLiteOpenHelper{
                 user.setUsername(cursor.getString(1));
                 user.setEmail(cursor.getString(2));
                 user.setMessage(cursor.getString(3));
+                user.setRoom(cursor.getString(4));
 
                 userList.add(user);
             }while (cursor.moveToNext());
@@ -126,6 +129,7 @@ public class UserDBHandler extends SQLiteOpenHelper{
         value.put(KEY_UID,  user.getID());
         value.put(KEY_EMAIL, user.getEmail());
         value.put(KEY_LAST_MESSAGE, user.getMessage());
+        value.put(KEY_ROOM, user.getRoom());
 
         return sqLiteDatabase.update(TABLE_USER, value, KEY_USERNAME + " =?", new String[]{ user.getUsername()  });
     }
@@ -156,6 +160,26 @@ public class UserDBHandler extends SQLiteOpenHelper{
         db.close();              //AND your Database!
         return hasObject;
     }
+
+    public boolean hasRoom(String roomname){
+        SQLiteDatabase db = getWritableDatabase();
+        String selectString = "SELECT * FROM " + TABLE_USER + " WHERE " + KEY_ROOM + " =?";
+
+        // Add the String you are searching by here.
+        // Put it in an array to avoid an unrecognized token error
+        Cursor cursor = db.rawQuery(selectString, new String[] {roomname});
+
+        boolean hasObject = false;
+        if(cursor.moveToFirst()){
+            hasObject = true;
+        }
+
+        cursor.close();          // Dont forget to close your cursor
+        db.close();              //AND your Database!
+        return hasObject;
+    }
+
+
 
 }
 

@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.metacrazie.chat.R;
+import com.metacrazie.chat.main.MainChatActivity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -117,7 +118,6 @@ public class LoginActivity extends AppCompatActivity {
                                                 Map<String, Object> map2 = new HashMap<String, Object>();
                                                 map2.put("username", displayName);
                                                 map2.put("email",mEmail);
-                                                map2.put("password",mPassword);
                                                 map2.put("uid", user.getUid());
                                                 Log.d(TAG, "details added to firebase");
                                                 userDetails.updateChildren(map2);
