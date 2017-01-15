@@ -1,33 +1,22 @@
 package com.metacrazie.chat.widget;
 
-import android.app.LauncherActivity;
-import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.metacrazie.chat.R;
-import com.metacrazie.chat.adapters.CustomCursorAdapter;
-import com.metacrazie.chat.data.DataTable;
+import com.metacrazie.chat.adapters.StarListAdapter;
 import com.metacrazie.chat.data.User;
 import com.metacrazie.chat.data.UserDBHandler;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -45,7 +34,7 @@ public class WidgetService extends RemoteViewsService{
     public static final Uri CONTENT_URI = Uri.parse(URL);
     private int count = 0;
 
-    private CustomCursorAdapter mAdapter;
+    private StarListAdapter mAdapter;
 
 
     @Override

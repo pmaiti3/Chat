@@ -26,10 +26,10 @@
 
     <string name="intro1">Chat</string>
     <string name="intro1_desc">A simple chat application</string>
-    <string name="intro2">Some title</string>
-    <string name="intro2_desc">Some random filler description</string>
-    <string name="intro3">Last Page</string>
-    <string name="intro3_desc">Cuz third time is the charm</string>
+    <string name="intro2">Private and Group Chats</string>
+    <string name="intro2_desc">Start a new chat by clicking FAB</string>
+    <string name="intro3">Important Messages</string>
+    <string name="intro3_desc">Star an important message by simply clicking on it</string>
 
     <string name="progress_bar">CREATING USER PROFILE</string>
     <string name="title_activity_main2">MainActivity2</string>
@@ -57,6 +57,7 @@
 
     <string name="nav_chats">Chats</string>
     <string name="nav_friends">Friends</string>
+    <string name="nav_starred">Starred Messages</string>
     <string name="nav_setting">Settings</string>
     <string name="nav_about">About</string>
     <string name="title_activity_settings">Settings</string>

@@ -1,9 +1,12 @@
 package com.metacrazie.chat.main;
 
+import android.app.LoaderManager;
 import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
@@ -41,6 +44,7 @@ import com.metacrazie.chat.adapters.ChatRoomAdapter;
 import com.metacrazie.chat.data.User;
 import com.metacrazie.chat.data.UserDBHandler;
 import com.metacrazie.chat.ui.AboutActivity;
+import com.metacrazie.chat.ui.StarLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +54,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class MainChatActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener{
 
     private String TAG= MainChatActivity.class.getSimpleName();
 
@@ -314,6 +318,10 @@ public class MainChatActivity extends AppCompatActivity
             Intent intent = new Intent(MainChatActivity.this, Contacts.class);
             startActivity(intent);
 
+        } else if (id == R.id.nav_starred) {
+            Intent intent = new Intent(MainChatActivity.this, StarLoader.class);
+            startActivity(intent);
+
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(MainChatActivity.this, SettingsActivity.class);
             startActivity(intent);
@@ -326,6 +334,7 @@ public class MainChatActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
 
 }

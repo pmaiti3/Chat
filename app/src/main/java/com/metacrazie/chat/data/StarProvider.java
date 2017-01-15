@@ -1,0 +1,190 @@
+package com.metacrazie.chat.data;
+
+import android.content.ContentProvider;
+import android.content.ContentValues;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.Uri;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
+
+import java.util.Arrays;
+import java.util.HashSet;
+
+/**
+ * Created by praty on 15/01/2017.
+ */
+
+public class StarProvider extends ContentProvider {
+
+
+    public static final String PROVIDER_NAME = "com.metacrazie.chat.data.StarProvider";
+    public static final String URL = "content://"+PROVIDER_NAME+"/star_table";
+    public static final Uri CONTENT_URI = Uri.parse(URL);
+
+    //added later
+    public static final String KEY_MESSAGE = "_message";
+    public static final String KEY_ID = "_id";
+
+
+    private StarDBHandler database;
+    private static final int STARS = 10;
+    private static final int STAR_MESSAGE = 20;
+    /*
+    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
+            + "/user_table";
+    public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
+            + "/user";
+*/
+
+    private static final UriMatcher uriMatcher = getUriMatcher();
+    private static UriMatcher getUriMatcher() {
+        UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        uriMatcher.addURI(PROVIDER_NAME, "star_table", STARS);
+        uriMatcher.addURI(PROVIDER_NAME, "star_table/#", STAR_MESSAGE);
+        return uriMatcher;
+    }
+
+
+
+    @Override
+    public boolean onCreate() {
+        database = new StarDBHandler(getContext());
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        SQLiteQueryBuilder sqLiteQueryBuilder = new SQLiteQueryBuilder();
+        checkColumns(projection);
+
+        sqLiteQueryBuilder.setTables(StarTable.TABLE_STAR);
+
+        int uriType = uriMatcher.match(uri);
+        switch (uriType) {
+            case STARS:
+                break;
+            case STAR_MESSAGE:
+                // adding the username to the original query
+                sqLiteQueryBuilder.appendWhere(StarTable.KEY_ID + "="
+                        + uri.getLastPathSegment());
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+        SQLiteDatabase db = database.getWritableDatabase();
+        Cursor cursor = sqLiteQueryBuilder.query(db, projection, selection,
+                selectionArgs, null, null, sortOrder);
+        // make sure that potential listeners are getting notified
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return cursor;
+    }
+
+    @Nullable
+    @Override
+    public String getType(Uri uri) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Uri insert(Uri uri, ContentValues contentValues) {
+        int uriType = uriMatcher.match(uri);
+        SQLiteDatabase sqlDB = database.getWritableDatabase();
+        long id = 0;
+        switch (uriType) {
+            case STARS:
+                id = sqlDB.insert(StarTable.TABLE_STAR, null, contentValues);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return Uri.parse("stars/" + id);
+    }
+
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        int uriType = uriMatcher.match(uri);
+        SQLiteDatabase sqlDB = database.getWritableDatabase();
+        int rowsDeleted = 0;
+        switch (uriType) {
+            case STARS:
+                rowsDeleted = sqlDB.delete(StarTable.TABLE_STAR, selection,
+                        selectionArgs);
+                break;
+            case STAR_MESSAGE:
+                String message = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rowsDeleted = sqlDB.delete(
+                            StarTable.TABLE_STAR,
+                            StarTable.KEY_MESSAGES+ "=" + message,
+                            null);
+                } else {
+                    rowsDeleted = sqlDB.delete(
+                            StarTable.TABLE_STAR,
+                            StarTable.KEY_MESSAGES + "=" + message
+                                    + " and " + selection,
+                            selectionArgs);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rowsDeleted;
+    }
+
+    @Override
+    public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
+        int uriType = uriMatcher.match(uri);
+        SQLiteDatabase sqlDB = database.getWritableDatabase();
+        int rowsUpdated = 0;
+        switch (uriType) {
+            case STARS:
+                rowsUpdated = sqlDB.update(StarTable.TABLE_STAR,
+                        contentValues,
+                        selection,
+                        selectionArgs);
+                break;
+            case STAR_MESSAGE:
+                String message = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rowsUpdated = sqlDB.update(StarTable.TABLE_STAR,
+                            contentValues,
+                            StarTable.KEY_MESSAGES + "=" + message,
+                            null);
+                } else {
+                    rowsUpdated = sqlDB.update(StarTable.TABLE_STAR,
+                            contentValues,
+                            StarTable.KEY_MESSAGES + "=" + message
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rowsUpdated;
+    }
+
+    private void checkColumns(String[] projection) {
+        String[] available = { StarTable.KEY_ID, StarTable.KEY_MESSAGES };
+        if (projection != null) {
+            HashSet<String> requestedColumns = new HashSet<String>(
+                    Arrays.asList(projection));
+            HashSet<String> availableColumns = new HashSet<String>(
+                    Arrays.asList(available));
+            // check if all columns which are requested are available
+            if (!availableColumns.containsAll(requestedColumns)) {
+                throw new IllegalArgumentException(
+                        "Unknown columns in projection");
+            }
+        }
+    }
+}

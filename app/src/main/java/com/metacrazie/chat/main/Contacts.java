@@ -70,6 +70,8 @@ public class Contacts extends AppCompatActivity {
         setContentView(R.layout.contacts);
         setTitle(getString(R.string.nav_friends));
 
+        final boolean isGroup= getIntent().getBooleanExtra("addGroup", false);
+
         mListView = (ListView)findViewById(R.id.contacts_listview);
         mContactsListAdapter = new ContactsListAdapter(this, mUsernameList, mEmailList);
         mListView.setAdapter(mContactsListAdapter);
@@ -109,7 +111,7 @@ public class Contacts extends AppCompatActivity {
                 final String userEmail= ((TextView)view.findViewById(R.id.contacts_email)).getText().toString();
                 Log.d(TAG, "start new chat with user: "+startNewChatUser);
 
-                //TODO check if chat already initiated
+                if (!isGroup){
                 final UserDBHandler dbHandler = new UserDBHandler(getApplication());
                 if (!dbHandler.hasUser(startNewChatUser)){
                     new AlertDialog.Builder(Contacts.this)
@@ -184,6 +186,19 @@ public class Contacts extends AppCompatActivity {
                     intent.putExtra("username", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                     intent.putExtra("roomname", RoomName.generate_room_name(startNewChatUser,
                             FirebaseAuth.getInstance().getCurrentUser().getDisplayName() ));
+                    startActivity(intent);
+                }
+            }else{
+                    //IS FOR ADDING TO GROUP CHAT
+
+                    String chatroomName=getIntent().getStringExtra("groupName");
+                    Map<String, Object> users = new HashMap<String, Object>();
+                    users.put(startNewChatUser,  "");
+                    newRoom.child(chatroomName).child(CHAT_USERS).updateChildren(users);
+
+                    Intent intent = new Intent(Contacts.this, ChatActivity.class);
+                    intent.putExtra("username", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                    intent.putExtra("roomname", chatroomName);
                     startActivity(intent);
                 }
             }

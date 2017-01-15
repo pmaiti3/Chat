@@ -1,12 +1,17 @@
 package com.metacrazie.chat.main;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -20,6 +25,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.metacrazie.chat.R;
 import com.metacrazie.chat.adapters.ChatListAdapter;
 import com.metacrazie.chat.data.DataProvider;
+import com.metacrazie.chat.data.StarProvider;
+import com.metacrazie.chat.data.StarTable;
 import com.metacrazie.chat.data.UserDBHandler;
 
 import java.text.SimpleDateFormat;
@@ -37,8 +44,6 @@ public class ChatActivity extends AppCompatActivity {
 
     private ListView mListView;
     private EditText mMessageText;
-    private TextView chat_conversation;
-    private ArrayAdapter<String> mArrayAdapter;
     private ArrayList<String> mMessageList = new ArrayList<>() ;
     private ArrayList<String> mUserList = new ArrayList<>();
     private ArrayList<String> mTimeList = new ArrayList<>();
@@ -48,7 +53,6 @@ public class ChatActivity extends AppCompatActivity {
     private String MESSAGES =  "messages";
 
     private ChatListAdapter mChatListAdapter;
- //   SharedPreferences mSharedPreferences = getSharedPreferences("pref", MODE_PRIVATE);
     private String TAG = ChatActivity.class.getSimpleName();
 
     private String username;
@@ -75,19 +79,31 @@ public class ChatActivity extends AppCompatActivity {
 
         root = FirebaseDatabase.getInstance().getReference().child(CONVERSATIONS).child(chatroom).child(MESSAGES);
 
-      //  boolean isGroup= mSharedPreferences.getBoolean("isGroup", true);
-        //TODO open add users button
-
         mListView = (ListView)findViewById(R.id.chat_list);
         mChatListAdapter=new ChatListAdapter(this, mUserList, mMessageList, mTimeList);
         mListView.setAdapter(mChatListAdapter);
 
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView userText = (TextView)view.findViewById(R.id.chat_user);
+                TextView msgText = (TextView)view.findViewById(R.id.chat_message);
+
+                String starredMessage = userText.getText().toString()+" : "+msgText.getText().toString();
+
+                ContentValues values = new ContentValues();
+                values.put(StarProvider.KEY_MESSAGE, starredMessage);
+                values.put(StarProvider.KEY_ID, msgText.getText().toString());
+                getContentResolver().insert(StarProvider.CONTENT_URI, values);
+                Log.d(TAG, "added new starred message");
+
+            }
+        });
+
         //Initialise database
         dbHandler = new UserDBHandler(this);
 
-        if (RoomName.isGroupChat(chatroom)){
-            //allow add more users TODO
-        }
+
 
 
         mSendFab.setOnClickListener(new View.OnClickListener() {
@@ -114,12 +130,6 @@ public class ChatActivity extends AppCompatActivity {
                     newMap.put("time", format);
 
                     message_root.updateChildren(newMap);
-                    //TODO Check if the chat is private or group
-                /*
-                User user = new User("", chatroom, "" , username+" : "+mMessageText.getText().toString());
-                dbHandler.updateUser(user);
-                Log.d(TAG, "Updated database: "+chatroom);
-                */
 
                     ContentValues values = new ContentValues();
                     values.put(DataProvider.KEY_LAST_MESSAGE, username + " : " + mMessageText.getText().toString());
@@ -192,4 +202,33 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (RoomName.isGroupChat(chatroom)){
+            getMenuInflater().inflate(R.menu.group_menu, menu);
+
+
+
+
+
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_members:
+                Intent i = new Intent(this,Contacts.class);
+                i.putExtra("addGroup", true);
+                i.putExtra("groupName", chatroom);
+                this.startActivity(i);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }

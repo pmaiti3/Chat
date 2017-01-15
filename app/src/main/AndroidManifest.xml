@@ -38,6 +38,8 @@
 
         <activity android:name=".ui.AboutActivity" />
 
+        <activity android:name=".ui.StarLoader"/>
+
         <activity android:name=".ui.SettingsActivity" />
 
         <activity android:name=".main.Contacts" />
@@ -54,6 +56,10 @@
         <provider
             android:name=".data.DataProvider"
             android:authorities="com.metacrazie.chat.data.DataProvider" >
+        </provider>
+        <provider
+            android:name=".data.StarProvider"
+            android:authorities="com.metacrazie.chat.data.StarProvider" >
         </provider>
         <service android:name=".widget.WidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"/>

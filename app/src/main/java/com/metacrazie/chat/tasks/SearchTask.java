@@ -11,7 +11,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by praty on 10/01/2017.
@@ -63,12 +65,13 @@ public class SearchTask extends AsyncTask<String, String, String> {
 
 
                         while (k.hasNext()) {
-                            DataSnapshot mDataSnapshot =(DataSnapshot) j.next();
-                            String s = (String) (mDataSnapshot).getValue();
-                            if (isPresent(s)) {
-                                j.next();
-                                resultList.add(  ((String)((DataSnapshot)j.next()).getValue())+" : "+s);
-                                Log.d(TAG,((String)((DataSnapshot)j.next()).getValue())+" : "+s );
+                            DataSnapshot mDataSnapshot =(DataSnapshot) k.next();
+                            HashMap<String, Object> map = new HashMap<String, Object>();
+                            map = (HashMap<String, Object>) (mDataSnapshot).getValue();
+                            if (isPresent((String) map.get("msg"))) {
+                                k.next();
+                                resultList.add(((String)((DataSnapshot)k.next()).getValue())+" : "+((String) map.get("msg")));
+                                Log.d(TAG,((String)((DataSnapshot)k.next()).getValue())+" : "+((String) map.get("msg")) );
                             }
                         }
 

@@ -98,13 +98,15 @@ public class SettingsActivity extends AppCompatActivity {
         LinearLayout layout = new LinearLayout(context);
         layout.setOrientation(LinearLayout.VERTICAL);
 
+        //TODO strings
+
         nameEditText.setHint("New Display Name");
         layout.addView(nameEditText);
 
         emailEditText.setHint("Current Email");
         layout.addView(emailEditText);
 
-        passEditText1.setHint("Curernt Password");
+        passEditText1.setHint("Current Password");
         layout.addView(passEditText1);
 
         passEditText2.setHint("Confirm Password");
