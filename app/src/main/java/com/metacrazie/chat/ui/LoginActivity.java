@@ -40,9 +40,9 @@ import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private String TAG=LoginActivity.class.getSimpleName();
+    private static String TAG=LoginActivity.class.getSimpleName();
     private String ADD_USER="add_user";
-    private FirebaseAuth mAuth;
+    private static FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private EditText mEmailField;
     private EditText mPasswordField;
@@ -60,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private String REGISTERED_USERS= "registered_users";
     private String CONVERSATIONS = "conversations";
-    private int flag=0;
+    private static int flag=0;
 
     private ProgressDialog mProgressBar;
 
@@ -276,7 +276,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    public void signOut()
+    public static void signOut()
     {
         mAuth.signOut();
     }

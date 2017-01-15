@@ -69,7 +69,7 @@ public class RoomName {
 
     }
 
-    public boolean isGroupChat(String roomName){
+    public static boolean isGroupChat(String roomName){
 
         int i= roomName.length()-1;
         while(i>=0){

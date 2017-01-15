@@ -63,7 +63,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_screen);
 
-        final FloatingActionButton mSendFab = (FloatingActionButton) findViewById(R.id.chat_fab);
+        final com.getbase.floatingactionbutton.FloatingActionButton mSendFab = (com.getbase.floatingactionbutton.FloatingActionButton)findViewById(R.id.chat_fab);
         mListView = (ListView)findViewById(R.id.chat_list);
         mMessageText = (EditText)findViewById(R.id.chat_text);
 
@@ -84,6 +84,10 @@ public class ChatActivity extends AppCompatActivity {
 
         //Initialise database
         dbHandler = new UserDBHandler(this);
+
+        if (RoomName.isGroupChat(chatroom)){
+            //allow add more users TODO
+        }
 
 
         mSendFab.setOnClickListener(new View.OnClickListener() {
@@ -162,9 +166,16 @@ public class ChatActivity extends AppCompatActivity {
 
         while (i.hasNext()){
 
-            mMessageList.add((String) ((DataSnapshot)i.next()).getValue());
+            String msg=(String) ((DataSnapshot)i.next()).getValue();
+            mMessageList.add(msg);
             mTimeList.add((String) ((DataSnapshot)i.next()).getValue());
-            mUserList.add((String) ((DataSnapshot)i.next()).getValue());
+            String usr=(String) ((DataSnapshot)i.next()).getValue();
+            mUserList.add(usr);
+
+            ContentValues values = new ContentValues();
+            values.put(DataProvider.KEY_LAST_MESSAGE, usr + " : " + msg);
+            getContentResolver().update(DataProvider.CONTENT_URI, values, DataProvider.KEY_USERNAME + "=?", new String[]{RoomName.display_room_name(username, chatroom)});
+            Log.d(TAG, "added new msg via CP");
 
             mChatListAdapter.notifyDataSetChanged();
 

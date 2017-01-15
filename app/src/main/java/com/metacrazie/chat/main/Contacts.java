@@ -114,7 +114,7 @@ public class Contacts extends AppCompatActivity {
                 if (!dbHandler.hasUser(startNewChatUser)){
                     new AlertDialog.Builder(Contacts.this)
                             .setTitle(getString(R.string.alert_new_chat_title))
-                            .setMessage(R.string.alert_new_chat_message)
+                            .setMessage(R.string.alert_new_chat_message+" "+startNewChatUser)
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int i) {
 

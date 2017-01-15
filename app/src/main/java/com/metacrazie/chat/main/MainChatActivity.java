@@ -2,10 +2,11 @@ package com.metacrazie.chat.main;
 
 import android.app.SearchManager;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
@@ -33,7 +34,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.metacrazie.chat.R;
-import com.metacrazie.chat.SearchTask;
+import com.metacrazie.chat.tasks.SearchTask;
 import com.metacrazie.chat.data.DataProvider;
 import com.metacrazie.chat.ui.SettingsActivity;
 import com.metacrazie.chat.adapters.ChatRoomAdapter;
@@ -98,8 +99,6 @@ public class MainChatActivity extends AppCompatActivity
 
         mListView = (ListView)findViewById(R.id.chatlistView);
 
-        mRoomEditText = (EditText)findViewById(R.id.room_name_edittext);
-
         View headerLayout= navigationView.getHeaderView(0);
         mNavHeaderText = (TextView) headerLayout.findViewById(R.id.nav_header_textView);
 
@@ -115,8 +114,8 @@ public class MainChatActivity extends AppCompatActivity
 
         //custom adapter with data from content provider using loader
 
-            mChatAdapter = new ChatRoomAdapter(this, list_of_rooms, list_of_messages);
-            mListView.setAdapter(mChatAdapter);
+        mChatAdapter = new ChatRoomAdapter(this, list_of_rooms, list_of_messages);
+        mListView.setAdapter(mChatAdapter);
 
 
         final FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
@@ -130,20 +129,39 @@ public class MainChatActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                SharedPreferences mSharedPreferences = getSharedPreferences(pref, MODE_PRIVATE);
-                SharedPreferences.Editor editor = mSharedPreferences.edit();
-                editor.putBoolean("isGroup", true);
-                editor.apply();
+                final EditText groupEditText = new EditText(MainChatActivity.this);
 
-                Map<String, Object> map=new HashMap<String, Object>();
-                map.put(mRoomEditText.getText().toString(), root.push().getKey());
-                root.updateChildren(map);
+                new AlertDialog.Builder(MainChatActivity.this)
+                        .setTitle(getString(R.string.alert_new_group_message))
+                        .setMessage(getString(R.string.message_group_chat))
+                        .setView(groupEditText)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Map<String, Object> map=new HashMap<String, Object>();
+                                map.put(groupEditText.getText().toString(), root.push().getKey());
+                                root.updateChildren(map);
 
-                Map<String, Object> users = new HashMap<String, Object>();
-                users.put(user.getDisplayName(), "");
-                root.child(mRoomEditText.getText().toString()).child(CHAT_USERS).updateChildren(users);
+                                Map<String, Object> users = new HashMap<String, Object>();
+                                users.put(user.getDisplayName(), "");
+                                root.child(groupEditText.getText().toString()).child(CHAT_USERS).updateChildren(users);
 
-                mRoomEditText.setText("");
+                            }
+                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }).show();
+
+            }
+        });
+
+        privateFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent  = new Intent(MainChatActivity.this, Contacts.class);
+                startActivity(intent);
             }
         });
 
@@ -152,7 +170,7 @@ public class MainChatActivity extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 list_of_messages.clear();
-                Set<String> set= new HashSet<String>();
+                list_of_rooms.clear();
 
                 Iterator i = dataSnapshot.getChildren().iterator();
                 while(i.hasNext()){
@@ -171,23 +189,17 @@ public class MainChatActivity extends AppCompatActivity
                             Log.d(TAG, "added new user via CP");
                         }
                         String getName= RoomName.display_room_name(user.getDisplayName(),roomName);
-                        set.add(getName);
-                        String string = updateRoom((mDataSnapshot).getKey());
+                        list_of_rooms.add(getName);
+                        String string = updateRoomMessage((mDataSnapshot).getKey());
                         list_of_messages.add(string);
 
                     }
 
                 }
 
-                list_of_rooms.clear();
-                list_of_rooms.addAll(set);
-               // list_of_messages.add("Random");
-
                     if (list_of_rooms.size()!=0){
                         mChatAdapter.notifyDataSetChanged();
                     }
-
-               // mArrayAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -201,18 +213,25 @@ public class MainChatActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent=new Intent(MainChatActivity.this, ChatActivity.class);
                 String user1= ((TextView)view.findViewById(R.id.textView)).getText().toString();
-                intent.putExtra("roomname", RoomName.generate_room_name(user1, name));
+
+                if (dbHandler.hasRoom(user1)){
+                    intent.putExtra("roomname", user1);
+                }else {
+                    intent.putExtra("roomname", RoomName.generate_room_name(user1, name));
+                }
                 intent.putExtra("username", name);
                 startActivity(intent);
             }
         });
     }
 
-    public String updateRoom(String name){
+    public String updateRoomMessage(String mergedRoomName){
 
-        //TODO use cursor here
-        if (dbHandler.hasUser(name)) {
-            User user = dbHandler.getUser(name);
+        String otherUser = RoomName.display_room_name(FirebaseAuth.getInstance()
+                .getCurrentUser().getDisplayName(), mergedRoomName);
+
+        if (dbHandler.hasRoom(mergedRoomName)) {
+            User user = dbHandler.getUser(otherUser);
             if (user.getMessage() != null)
                 return user.getMessage();
             else
@@ -245,7 +264,7 @@ public class MainChatActivity extends AppCompatActivity
 
             @Override
             public boolean onQueryTextSubmit(String s) {
-                new SearchTask(getApplicationContext(), s).execute();
+                new SearchTask(MainChatActivity.this, s).execute();
                 Log.d(TAG, "onQueryTextSubmit "+s);
                 return false;
             }

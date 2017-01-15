@@ -42,6 +42,15 @@
 
     <string name="alert_new_chat_title">New Chat</string>
     <string name="alert_new_chat_message">Start private chat with </string>
+    <string name="alert_new_group_message">New Group Chat</string>
+
+    <string name="group_chat">Start Group Chat</string>
+    <string name="private_chat">Start Private Chat</string>
+
+    <string name="change_name_msg">Type New Username: </string>
+    <string name="change_name_title">Change Existing Username</string>
+
+    <string name="message_group_chat">New room name:</string>
 
     <string name="placeholher_message">Message</string>
     <string name="placeholder_user">User</string>

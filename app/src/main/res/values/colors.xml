@@ -4,5 +4,10 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="colorAccentDark">#D81B60</color>
+
+    <color name="blue">#2196F3</color>
     <color name="widgetBackground">#c3ffffff</color>
+
+    <color name="secondary_text">#727272</color>
 </resources>

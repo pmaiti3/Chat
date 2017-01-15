@@ -9,22 +9,12 @@
     android:layout_marginBottom="@dimen/padding_10"
     tools:context=".main.MainChatActivity">
 
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/room_name_edittext"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/fab_menu" />
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:overScrollMode="ifContentScrolls"
         android:id="@+id/chatlistView"
-        android:layout_alignParentTop="true"
-        android:layout_above="@+id/room_name_edittext" />
+        android:layout_alignParentTop="true" />
 
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/fab_menu"
@@ -33,6 +23,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         fab:fab_addButtonPlusIconColor="@android:color/white"
+        fab:fab_labelStyle="@style/menu_labels_style"
         android:layout_marginStart="16dp"
         fab:fab_labelsPosition="left">
 
@@ -40,15 +31,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/group_fab"
+            fab:fab_icon="@drawable/add"
             fab:fab_size="mini"
-            fab:fab_title="Label on the right"/>
+            fab:fab_title="@string/group_chat"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/private_fab"
+            fab:fab_icon="@drawable/add"
             fab:fab_size="mini"
-            fab:fab_title="Another one on the right"/>
+            fab:fab_title="@string/private_chat"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
