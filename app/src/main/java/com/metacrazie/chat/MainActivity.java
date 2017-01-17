@@ -39,12 +39,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //TODO if first time then start intro activity
-
-        //TODO check if Logged in or not
-
-        setContentView(R.layout.activity_main);
         mFirebaseAnalytics= FirebaseAnalytics.getInstance(this);
         mSharedPreferences = getSharedPreferences(pref, MODE_PRIVATE);
 
@@ -86,40 +80,18 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
-        else
-        {
-            if(mFirebaseUser==null){
-                Intent intent=new Intent(MainActivity.this, LoginActivity.class);
+        else {
+            if (mFirebaseUser == null) {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
-            }else
-            {
+            } else {
                 Intent intent = new Intent(MainActivity.this, MainChatActivity.class);
                 startActivity(intent);
                 finish();
             }
 
         }
-
-
-      /*  login_btn = (AppCompatButton)findViewById(R.id.login_btn);
-        chat_btn = (AppCompatButton)findViewById(R.id.chat_btn);
-
-        login_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        chat_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, MainChatActivity.class);
-                startActivity(intent);
-            }
-        });*/
     }
 
 }

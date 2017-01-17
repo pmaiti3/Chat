@@ -1,9 +1,12 @@
 package com.metacrazie.chat.main;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -69,12 +72,15 @@ public class Contacts extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.contacts);
         setTitle(getString(R.string.nav_friends));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final boolean isGroup= getIntent().getBooleanExtra("addGroup", false);
 
         mListView = (ListView)findViewById(R.id.contacts_listview);
         mContactsListAdapter = new ContactsListAdapter(this, mUsernameList, mEmailList);
         mListView.setAdapter(mContactsListAdapter);
+
+
 
         root.addChildEventListener(new ChildEventListener() {
             @Override
@@ -228,6 +234,12 @@ public class Contacts extends AppCompatActivity {
 
         }
 
+    }
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 }

@@ -23,6 +23,15 @@
 
     <string name="search">Search</string>
     <string name="search_hint">Search</string>
+    <string name="search_progress">Searching for messages</string>
+
+    <string name="change_name_1">New Display Name</string>
+    <string name="change_name_2">Current Email</string>
+    <string name="change_name_3">Current Password</string>
+    <string name="change_name_4">Confirm Password</string>
+
+    <string name="alert_ok">OK</string>
+    <string name="alert_cancel">Cancel</string>
 
     <string name="intro1">Chat</string>
     <string name="intro1_desc">A simple chat application</string>
@@ -30,6 +39,10 @@
     <string name="intro2_desc">Start a new chat by clicking FAB</string>
     <string name="intro3">Important Messages</string>
     <string name="intro3_desc">Star an important message by simply clicking on it</string>
+    <string name="credits1">App Icon Credits: Moonshine Icon Pack</string>
+    <string name="credits2">Icon Credits: Material Icon Pack</string>
+
+    <string name="no_internet">No Internet Connection</string>
 
     <string name="progress_bar">CREATING USER PROFILE</string>
     <string name="title_activity_main2">MainActivity2</string>

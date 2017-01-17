@@ -24,7 +24,11 @@
 
         <activity android:name=".ui.IntroActivity" />
 
-        <activity android:name=".main.ChatActivity" />
+        <activity android:name=".main.ChatActivity"
+            android:parentActivityName=".main.MainChatActivity"/>
+
+        <activity android:name=".ui.SearchActivity"
+            android:parentActivityName=".main.MainChatActivity"/>
 
         <activity
             android:name=".main.MainChatActivity"
@@ -38,11 +42,14 @@
 
         <activity android:name=".ui.AboutActivity" />
 
-        <activity android:name=".ui.StarLoader"/>
+        <activity android:name=".ui.StarLoader"
+            android:parentActivityName=".main.MainChatActivity"/>
 
-        <activity android:name=".ui.SettingsActivity" />
+        <activity android:name=".ui.SettingsActivity"
+            android:parentActivityName=".main.MainChatActivity"/>
 
-        <activity android:name=".main.Contacts" />
+        <activity android:name=".main.Contacts"
+            android:parentActivityName=".main.MainChatActivity"/>
 
         <receiver android:name=".widget.WidgetProvider">
             <intent-filter>

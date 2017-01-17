@@ -6,12 +6,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.metacrazie.chat.R;
 import com.metacrazie.chat.adapters.StarListAdapter;
+import com.metacrazie.chat.data.StarProvider;
 import com.metacrazie.chat.data.StarTable;
 
 import java.util.ArrayList;
@@ -37,6 +41,8 @@ public class StarLoader extends AppCompatActivity implements android.support.v4.
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.star_activity);
+        setTitle(getString(R.string.nav_starred));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         listView = (ListView)findViewById(R.id.star_list);
         mArrayAdapter= new StarListAdapter(this,arrayUserList, arrayMessageList);
@@ -44,6 +50,15 @@ public class StarLoader extends AppCompatActivity implements android.support.v4.
 
 
         getSupportLoaderManager().initLoader(LOADER_ID,null, this);
+/*
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String text =((TextView) view.findViewById(R.id.star_message)).getText().toString();
+                int ret_val = getContentResolver().delete(StarProvider.CONTENT_URI, StarTable.KEY_ID+ "=?", new String[]{text});
+                Toast.makeText(StarLoader.this, "Removed message from Starred List", Toast.LENGTH_SHORT).show();
+            }
+        });*/
     }
 
 
@@ -68,10 +83,10 @@ public class StarLoader extends AppCompatActivity implements android.support.v4.
         while (!cursor.isAfterLast()) {
             text = cursor.getString(0);
             cursor.moveToNext();
-        }
-        arrayUserList.add(text.substring(0, text.indexOf(':')-1));
-        arrayMessageList.add(text.substring(text.indexOf(':')+1));
 
+            arrayUserList.add(text.substring(0, text.indexOf(':') - 1));
+            arrayMessageList.add(text.substring(text.indexOf(':') + 1));
+        }
         mArrayAdapter.notifyDataSetChanged();
 
     }

@@ -58,6 +58,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
         setTitle(getString(R.string.action_settings));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -77,6 +78,7 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mAuth.signOut();
                 Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
             }
@@ -98,25 +100,23 @@ public class SettingsActivity extends AppCompatActivity {
         LinearLayout layout = new LinearLayout(context);
         layout.setOrientation(LinearLayout.VERTICAL);
 
-        //TODO strings
-
-        nameEditText.setHint("New Display Name");
+        nameEditText.setHint(getString(R.string.change_name_1));
         layout.addView(nameEditText);
 
-        emailEditText.setHint("Current Email");
+        emailEditText.setHint(getString(R.string.change_name_2));
         layout.addView(emailEditText);
 
-        passEditText1.setHint("Current Password");
+        passEditText1.setHint(getString(R.string.change_name_3));
         layout.addView(passEditText1);
 
-        passEditText2.setHint("Confirm Password");
+        passEditText2.setHint(getString(R.string.change_name_4));
         layout.addView(passEditText2);
 
         new AlertDialog.Builder(SettingsActivity.this)
                 .setTitle(getString(R.string.change_name_title))
                 .setMessage(getString(R.string.change_name_msg))
                 .setView(layout)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.alert_ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if (passEditText1.getText().toString().equals(passEditText2.getText().toString())) {
@@ -130,7 +130,7 @@ public class SettingsActivity extends AppCompatActivity {
                         }
 
                     }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                }).setNegativeButton(getString(R.string.alert_cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();

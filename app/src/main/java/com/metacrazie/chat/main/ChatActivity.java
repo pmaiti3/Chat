@@ -1,7 +1,10 @@
 package com.metacrazie.chat.main;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +32,8 @@ import com.metacrazie.chat.data.DataProvider;
 import com.metacrazie.chat.data.StarProvider;
 import com.metacrazie.chat.data.StarTable;
 import com.metacrazie.chat.data.UserDBHandler;
+
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -66,6 +72,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_screen);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final com.getbase.floatingactionbutton.FloatingActionButton mSendFab = (com.getbase.floatingactionbutton.FloatingActionButton)findViewById(R.id.chat_fab);
         mListView = (ListView)findViewById(R.id.chat_list);
@@ -83,6 +90,16 @@ public class ChatActivity extends AppCompatActivity {
         mChatListAdapter=new ChatListAdapter(this, mUserList, mMessageList, mTimeList);
         mListView.setAdapter(mChatListAdapter);
 
+        TextView filler = (TextView)findViewById(R.id.no_internet_chatscreen);
+        if (!isNetworkAvailable()){
+            if (mListView==null){
+                filler.setVisibility(View.VISIBLE);
+            }else
+                filler.setVisibility(View.INVISIBLE);
+        }else{
+            filler.setVisibility(View.INVISIBLE);
+        }
+
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -96,6 +113,8 @@ public class ChatActivity extends AppCompatActivity {
                 values.put(StarProvider.KEY_ID, msgText.getText().toString());
                 getContentResolver().insert(StarProvider.CONTENT_URI, values);
                 Log.d(TAG, "added new starred message");
+
+                Toast.makeText(ChatActivity.this, "Added New Starred Message", Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -215,6 +234,12 @@ public class ChatActivity extends AppCompatActivity {
             return true;
         }
         return false;
+    }
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override

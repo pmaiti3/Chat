@@ -5,15 +5,15 @@
         <menu>
             <item
                 android:id="@+id/nav_chat"
-                android:icon="@drawable/ic_menu_camera"
+                android:icon="@drawable/chat"
                 android:title="@string/nav_chats" />
             <item
                 android:id="@+id/nav_friends"
-                android:icon="@drawable/ic_menu_gallery"
+                android:icon="@drawable/contacts"
                 android:title="@string/nav_friends" />
             <item
                 android:id="@+id/nav_starred"
-                android:icon="@drawable/ic_menu_gallery"
+                android:icon="@drawable/star"
                 android:title="@string/nav_starred" />
         </menu>
     </item>
@@ -22,11 +22,11 @@
         <menu>
             <item
                 android:id="@+id/nav_settings"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/settings"
                 android:title="@string/nav_setting" />
             <item
                 android:id="@+id/nav_about"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/about"
                 android:title="@string/nav_about" />
         </menu>
     </item>

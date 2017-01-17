@@ -20,7 +20,7 @@ public class AboutActivity extends LibsActivity {
                 .withActivityTitle(getString(R.string.nav_about))
                 .withAboutAppName(getString(R.string.app_name))
                 .withAboutVersionShown(true)
-                .withAboutDescription(getString(R.string.intro1_desc))
+                .withAboutDescription(getString(R.string.credits1))
                 //provide a style (optional) (LIGHT, DARK, LIGHT_DARK_TOOLBAR)
                 .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR).intent(this));
                 //start the activity

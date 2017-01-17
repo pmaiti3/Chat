@@ -3,10 +3,13 @@ package com.metacrazie.chat.main;
 import android.app.LoaderManager;
 import android.app.SearchManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
@@ -27,6 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,6 +43,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.metacrazie.chat.R;
 import com.metacrazie.chat.tasks.SearchTask;
 import com.metacrazie.chat.data.DataProvider;
+import com.metacrazie.chat.ui.SearchActivity;
 import com.metacrazie.chat.ui.SettingsActivity;
 import com.metacrazie.chat.adapters.ChatRoomAdapter;
 import com.metacrazie.chat.data.User;
@@ -90,6 +95,8 @@ public class MainChatActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        setTitle(getString(R.string.app_name));
+
         //DrawerLayout
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -121,6 +128,11 @@ public class MainChatActivity extends AppCompatActivity
         mChatAdapter = new ChatRoomAdapter(this, list_of_rooms, list_of_messages);
         mListView.setAdapter(mChatAdapter);
 
+        TextView filler = (TextView)findViewById(R.id.no_internet_chatroom);
+        if (!isNetworkAvailable()){
+            Toast.makeText(getApplicationContext(), getString(R.string.no_internet), Toast.LENGTH_LONG).show();
+        }else
+            filler.setVisibility(View.INVISIBLE);
 
         final FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
         assert user != null;
@@ -229,6 +241,13 @@ public class MainChatActivity extends AppCompatActivity
         });
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     public String updateRoomMessage(String mergedRoomName){
 
         String otherUser = RoomName.display_room_name(FirebaseAuth.getInstance()
@@ -268,7 +287,9 @@ public class MainChatActivity extends AppCompatActivity
 
             @Override
             public boolean onQueryTextSubmit(String s) {
-                new SearchTask(MainChatActivity.this, s).execute();
+                Intent intent = new Intent(MainChatActivity.this, SearchActivity.class);
+                intent.putExtra("search", s);
+                startActivity(intent);
                 Log.d(TAG, "onQueryTextSubmit "+s);
                 return false;
             }
@@ -305,32 +326,44 @@ public class MainChatActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        if (isNetworkAvailable()) {
+            if (id == R.id.nav_chat) {
 
-        if (id == R.id.nav_chat) {
+                //TODO check which activity is running
 
-            //TODO check which activity is running
+                Intent intent = new Intent(MainChatActivity.this, MainChatActivity.class);
+                startActivity(intent);
+                finish();
+                // Handle the camera action
+            } else if (id == R.id.nav_friends) {
+                Intent intent = new Intent(MainChatActivity.this, Contacts.class);
+                startActivity(intent);
 
-            Intent intent = new Intent(MainChatActivity.this, MainChatActivity.class);
-            startActivity(intent);
-            finish();
-            // Handle the camera action
-        } else if (id == R.id.nav_friends) {
-            Intent intent = new Intent(MainChatActivity.this, Contacts.class);
-            startActivity(intent);
+            } else if (id == R.id.nav_starred) {
+                Intent intent = new Intent(MainChatActivity.this, StarLoader.class);
+                startActivity(intent);
 
-        } else if (id == R.id.nav_starred) {
-            Intent intent = new Intent(MainChatActivity.this, StarLoader.class);
-            startActivity(intent);
+            } else if (id == R.id.nav_settings) {
+                Intent intent = new Intent(MainChatActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            } else if (id == R.id.nav_about) {
+                Intent intent = new Intent(MainChatActivity.this, AboutActivity.class);
+                startActivity(intent);
+            }
+        }else {
+            if (id == R.id.nav_starred) {
+                Intent intent = new Intent(MainChatActivity.this, StarLoader.class);
+                startActivity(intent);
 
-        } else if (id == R.id.nav_settings) {
-            Intent intent = new Intent(MainChatActivity.this, SettingsActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_about) {
-            Intent intent = new Intent(MainChatActivity.this, AboutActivity.class);
-            startActivity(intent);
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            } else if (id == R.id.nav_settings) {
+                Intent intent = new Intent(MainChatActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            } else if (id == R.id.nav_about) {
+                Intent intent = new Intent(MainChatActivity.this, AboutActivity.class);
+                startActivity(intent);
+            }else
+            Toast.makeText(getApplicationContext(), getString(R.string.no_internet), Toast.LENGTH_LONG).show();
+        }DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
