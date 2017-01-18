@@ -69,6 +69,8 @@
             android:authorities="com.metacrazie.chat.data.StarProvider" >
         </provider>
         <service android:name=".widget.WidgetService"
+            android:enabled="true"
+            android:exported="true"
             android:permission="android.permission.BIND_REMOTEVIEWS"/>
     </application>
 

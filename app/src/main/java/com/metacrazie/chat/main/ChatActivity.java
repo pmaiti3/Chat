@@ -3,6 +3,7 @@ package com.metacrazie.chat.main;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -54,9 +55,10 @@ public class ChatActivity extends AppCompatActivity {
     private ArrayList<String> mUserList = new ArrayList<>();
     private ArrayList<String> mTimeList = new ArrayList<>();
 
-    private String REGISTERED_USERS= "registered_users";
     private String CONVERSATIONS = "conversations";
     private String MESSAGES =  "messages";
+
+    private SharedPreferences sharedPrefs;
 
     private ChatListAdapter mChatListAdapter;
     private String TAG = ChatActivity.class.getSimpleName();
@@ -71,14 +73,26 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.chat_screen);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        sharedPrefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        boolean isSet = sharedPrefs.getBoolean("switch_theme", false);
 
+        if (isSet){
+            setTheme(R.style.AppTheme_Dark);
+        }else{
+            setTheme(R.style.AppTheme);
+        }
+
+        setContentView(R.layout.chat_screen);
+        if (!isSet) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         final com.getbase.floatingactionbutton.FloatingActionButton mSendFab = (com.getbase.floatingactionbutton.FloatingActionButton)findViewById(R.id.chat_fab);
         mListView = (ListView)findViewById(R.id.chat_list);
         mMessageText = (EditText)findViewById(R.id.chat_text);
 
         scrollMyListViewToBottom();
+
+        sharedPrefs = getSharedPreferences("prefs", MODE_PRIVATE);
 
         username = getIntent().getExtras().get("username").toString();
         chatroom = getIntent().getExtras().get("roomname").toString();
@@ -112,9 +126,9 @@ public class ChatActivity extends AppCompatActivity {
                 values.put(StarProvider.KEY_MESSAGE, starredMessage);
                 values.put(StarProvider.KEY_ID, msgText.getText().toString());
                 getContentResolver().insert(StarProvider.CONTENT_URI, values);
-                Log.d(TAG, "added new starred message");
+                Log.d(TAG, getString(R.string.star_toast));
 
-                Toast.makeText(ChatActivity.this, "Added New Starred Message", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ChatActivity.this, getString(R.string.star_toast), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -141,10 +155,9 @@ public class ChatActivity extends AppCompatActivity {
                     newMap.put("msg", mMessageText.getText().toString().trim());
 
 
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd:MM:yyyy:hh:mm:ss");
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd:MM:yyyy:kk:mm:ss");
                     String format = simpleDateFormat.format(new Date());
                     format = format.substring(11, 16);
-                    Log.d("MainActivity", "Current Timestamp: " + format);
 
                     newMap.put("time", format);
 
@@ -197,19 +210,47 @@ public class ChatActivity extends AppCompatActivity {
 
             String msg=(String) ((DataSnapshot)i.next()).getValue();
             mMessageList.add(msg);
-            mTimeList.add((String) ((DataSnapshot)i.next()).getValue());
+            String time = (String) ((DataSnapshot)i.next()).getValue();
+            boolean isSet = sharedPrefs.getBoolean("switch_time", false);
+            if (!isSet){
+                mTimeList.add(time);
+            }else{
+                String hr = time.substring(0,2);
+                if (Integer.parseInt(hr)> 12){
+                    if (Integer.parseInt(hr)==24)
+                        hr="00";
+                    else
+                        hr= (Integer.parseInt(hr)-12)+"";
+                    time=String.format("%02d", Integer.parseInt(hr))+time.substring(2)+"PM";
+                    mTimeList.add(time);
+                }else
+                {
+                    time += "AM";
+                    mTimeList.add(time);
+                }
+            }
             String usr=(String) ((DataSnapshot)i.next()).getValue();
             mUserList.add(usr);
 
             ContentValues values = new ContentValues();
             values.put(DataProvider.KEY_LAST_MESSAGE, usr + " : " + msg);
-            getContentResolver().update(DataProvider.CONTENT_URI, values, DataProvider.KEY_USERNAME + "=?", new String[]{RoomName.display_room_name(username, chatroom)});
+            getContentResolver().update(DataProvider.CONTENT_URI,
+                    values,
+                    DataProvider.KEY_USERNAME + "=?",
+                    new String[]{RoomName.display_room_name(username, chatroom)});
             Log.d(TAG, "added new msg via CP");
 
             mChatListAdapter.notifyDataSetChanged();
 
             scrollMyListViewToBottom();
         }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     private void scrollMyListViewToBottom() {
@@ -226,20 +267,9 @@ public class ChatActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         if (RoomName.isGroupChat(chatroom)){
             getMenuInflater().inflate(R.menu.group_menu, menu);
-
-
-
-
-
             return true;
         }
         return false;
-    }
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override

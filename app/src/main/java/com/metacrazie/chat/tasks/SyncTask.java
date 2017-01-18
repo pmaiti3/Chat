@@ -70,7 +70,7 @@ public class SyncTask extends AsyncTask<String, String, String> {
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithEmail", task.getException());
-                            Toast.makeText(mContext, "Authentication failed.",
+                            Toast.makeText(mContext, mContext.getString(R.string.auth_fail),
                                     Toast.LENGTH_SHORT).show();
                         }
 

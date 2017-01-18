@@ -1,11 +1,14 @@
 package com.metacrazie.chat.widget;
 
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 
@@ -16,10 +19,9 @@ import com.metacrazie.chat.main.MainChatActivity;
  * Implementation of App Widget functionality.
  */
 public class WidgetProvider extends AppWidgetProvider {
-
-    private TextView mUserName;
-    private TextView mLastMessage;
-
+    public static String INTENT_ACTION = "StartApplication";
+    public static String TAP_ACTION= "com.metacrazie.chat.widget.TAP_ACTION";
+    private static String TAG = WidgetProvider.class.getSimpleName();
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
@@ -30,19 +32,32 @@ public class WidgetProvider extends AppWidgetProvider {
         for (int i=0; i<N; ++i) {
             int appWidgetId = appWidgetIds[i];
 
-            // Create an Intent to launch ExampleActivity
+            // Create an Intent to launch Activity
             Intent intent = new Intent(context, MainChatActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+            intent.setAction(INTENT_ACTION);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+
+
 
             // Get the layout for the App Widget and attach an on-click listener
             // to the button
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_activity);
-            views.setOnClickPendingIntent(R.id.widget_user, pendingIntent);
+            views.setOnClickPendingIntent(R.id.widget_listview, pendingIntent);
+
+            Intent tapIntent = new Intent(context, WidgetProvider.class);
+            tapIntent.setAction(WidgetProvider.TAP_ACTION);
+            tapIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetId);
+            intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+            PendingIntent tapPend = PendingIntent.getBroadcast(context, 0 , tapIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            views.setPendingIntentTemplate(R.id.widget_listview, tapPend);
+
 
             RemoteViews remoteViews = updateWidgetListView(context,
                     appWidgetIds[i]);
 
             // Tell the AppWidgetManager to perform an update on the current app widget
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds,R.id.widget_listview);
             appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
         }
     }
@@ -67,20 +82,21 @@ public class WidgetProvider extends AppWidgetProvider {
         //setting an empty view in case of no data
 
 
-  /*      //refresh widget more regularly
-        final PendingIntent pending = PendingIntent.getService(context, 0, svcIntent, 0);
-        final AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarm.cancel(pending);
-        long interval = 1000*30;
-        alarm.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(),interval, pending);
-  */
-
-        //TODO
-        //remoteViews.setEmptyView(R.id.listViewWidget, R.id.empty_view);
-
-
-
         return remoteViews;
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+        if (intent.getAction().equals(INTENT_ACTION)) {
+            context.startActivity(new Intent(context, MainChatActivity.class));
+        }
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context,getClass()));
+        Log.d(TAG, "widget onReceive");
+
+        // update All Widgets
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds,R.id.widget_listview);
     }
 
     @Override

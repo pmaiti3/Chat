@@ -7,6 +7,7 @@
             android:id="@+id/app_bar_widget"
             android:background="@color/colorPrimary"
             android:textColor="@android:color/white"
+            android:clickable="true"
             android:padding="@dimen/activity_horizontal_margin"
             android:textSize="@dimen/textSizeLarge_openSource"
             android:text="@string/app_name"
@@ -17,6 +18,7 @@
     <ListView
         android:layout_below="@+id/app_bar_widget"
         android:id="@+id/widget_listview"
+        android:clickable="true"
         android:background="@color/widgetBackground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

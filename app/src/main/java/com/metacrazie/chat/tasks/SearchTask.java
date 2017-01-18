@@ -84,7 +84,6 @@ public class SearchTask extends AsyncTask<String, String, String> {
         //super.onPostExecute(s);
         mProgressBar.cancel();
         mAdapter.notifyDataSetChanged();
-        SearchActivity.getData(mUserList, mMessageList, mRoomList);
     }
 
     @Override

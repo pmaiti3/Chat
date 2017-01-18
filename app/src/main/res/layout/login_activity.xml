@@ -96,6 +96,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:id="@+id/sign_up_btn"
+                android:contentDescription="@string/sign_up"
                 android:text="@string/sign_up"
                 android:layout_height="wrap_content" />
             <android.support.v7.widget.AppCompatButton
@@ -103,6 +104,7 @@
                 android:layout_width="wrap_content"
                 android:id="@+id/sign_out_btn"
                 android:visibility="invisible"
+                android:contentDescription="@string/sign_out"
                 android:text="@string/sign_out"
                 android:layout_height="wrap_content" />
             <android.support.v7.widget.AppCompatButton
@@ -110,6 +112,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:id="@+id/sign_in_btn"
+                android:contentDescription="@string/sign_in"
                 android:text="@string/sign_in"
                 android:layout_height="wrap_content" />
 

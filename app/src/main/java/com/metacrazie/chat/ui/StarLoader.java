@@ -1,5 +1,6 @@
 package com.metacrazie.chat.ui;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -40,6 +41,14 @@ public class StarLoader extends AppCompatActivity implements android.support.v4.
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences sharedPrefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        boolean isSet = sharedPrefs.getBoolean("switch_theme", false);
+
+        if (isSet){
+            setTheme(R.style.AppTheme_Dark);
+        }else{
+            setTheme(R.style.AppTheme);
+        }
         setContentView(R.layout.star_activity);
         setTitle(getString(R.string.nav_starred));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

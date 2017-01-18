@@ -6,7 +6,7 @@
 
     <TextView
         android:padding="@dimen/activity_horizontal_margin"
-        android:text="General Settings"
+        android:text="@string/settings_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -22,12 +22,12 @@
 
             <Switch
                 android:padding="@dimen/activity_horizontal_margin"
-                android:text="Theme"
+                android:text="@string/settings_theme_1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/switch_theme" />
             <TextView
-                android:text="Switch between light and dark theme"
+                android:text="@string/settings_theme_2"
                 android:paddingStart="@dimen/activity_horizontal_margin"
                 android:paddingEnd="@dimen/activity_horizontal_margin"
                 android:paddingBottom="@dimen/activity_horizontal_margin"
@@ -37,12 +37,41 @@
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
+    <TextView
+        android:padding="@dimen/activity_horizontal_margin"
+        android:text="@string/settings_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <android.support.v7.widget.CardView
+        android:layout_marginBottom="1sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+            <Switch
+                android:padding="@dimen/activity_horizontal_margin"
+                android:text="@string/settings_time_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/switch_time" />
+            <TextView
+                android:text="@string/settings_time_2a"
+                android:paddingStart="@dimen/activity_horizontal_margin"
+                android:paddingEnd="@dimen/activity_horizontal_margin"
+                android:paddingBottom="@dimen/activity_horizontal_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
 
     <TextView
         android:padding="@dimen/activity_horizontal_margin"
-        android:text="User Settings"
+        android:text="@string/settings_3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -53,8 +82,9 @@
 
         <android.support.v7.widget.AppCompatButton
             android:paddingStart="@dimen/activity_horizontal_margin"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:text="Change Display Name"
+            android:text="@string/settings_change_name"
             android:textAlignment="viewStart"
             android:textAllCaps="false"
             android:id="@+id/btn_change_username"
@@ -62,6 +92,7 @@
             android:layout_height="wrap_content" />
 
     </android.support.v7.widget.CardView>
+
     <android.support.v7.widget.CardView
         android:layout_marginBottom="1sp"
         android:layout_width="match_parent"
@@ -69,24 +100,9 @@
 
         <android.support.v7.widget.AppCompatButton
             android:paddingStart="@dimen/activity_horizontal_margin"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:text="Change Profile Image"
-            android:textAlignment="viewStart"
-            android:id="@+id/btn_change_image"
-            android:textAllCaps="false"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </android.support.v7.widget.CardView>
-    <android.support.v7.widget.CardView
-        android:layout_marginBottom="1sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.v7.widget.AppCompatButton
-            android:paddingStart="@dimen/activity_horizontal_margin"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:text="Sign Out"
+            android:text="@string/settings_signout"
             android:textAlignment="viewStart"
             android:id="@+id/btn_signout"
             android:textAllCaps="false"

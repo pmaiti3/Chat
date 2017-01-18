@@ -4,6 +4,8 @@
     <string name="display_name">Display Name</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="required">Required</string>
+    <string name="auth_fail">Authentication Failed</string>
 
     <string name="new_user">New User</string>
     <string name="existing_user">Existing User</string>
@@ -25,6 +27,8 @@
     <string name="search_hint">Search</string>
     <string name="search_progress">Searching for messages</string>
 
+    <string name="star_toast">Added New Starred Message</string>
+
     <string name="change_name_1">New Display Name</string>
     <string name="change_name_2">Current Email</string>
     <string name="change_name_3">Current Password</string>
@@ -32,6 +36,20 @@
 
     <string name="alert_ok">OK</string>
     <string name="alert_cancel">Cancel</string>
+
+    <string name="content_send">Send message</string>
+    <string name="content_addmsg">Type new message</string>
+
+    <string name="settings_1">General Settings</string>
+    <string name="settings_2">Chat Settings</string>
+    <string name="settings_3">User Settings</string>
+    <string name="settings_theme_1">Theme</string>
+    <string name="settings_theme_2">Switch between light and dark theme</string>
+    <string name="settings_time_1">Show AM/PM</string>
+    <string name="settings_time_2a">Currently showing 24 hour format</string>
+    <string name="settings_time_2b">Currently showing 12 hour format</string>
+    <string name="settings_change_name">Change Display Name</string>
+    <string name="settings_signout">Sign out</string>
 
     <string name="intro1">Chat</string>
     <string name="intro1_desc">A simple chat application</string>

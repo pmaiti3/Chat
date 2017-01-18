@@ -37,12 +37,6 @@ public class DataProvider extends ContentProvider{
     private UserDBHandler database;
     private static final int USERS = 10;
     private static final int USER_USERNAME = 20;
-    /*
-    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
-            + "/user_table";
-    public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
-            + "/user";
-*/
 
     private static final UriMatcher uriMatcher = getUriMatcher();
     private static UriMatcher getUriMatcher() {

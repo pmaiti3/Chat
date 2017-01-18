@@ -26,8 +26,6 @@ public class IntroActivity extends AppIntro2 {
         editor.putBoolean("first_run", false);
         editor.apply();
 
-        //TODO improve UI
-
         addSlide(AppIntroFragment.newInstance(getString(R.string.intro1), getString(R.string.intro1_desc), R.drawable.app_icon , getTitleColor()));
         addSlide(AppIntroFragment.newInstance(getString(R.string.intro2), getString(R.string.intro2_desc), R.drawable.app_icon , getTitleColor()));
         addSlide(AppIntroFragment.newInstance(getString(R.string.intro3), getString(R.string.intro3_desc), R.drawable.app_icon , getTitleColor()));

@@ -3,6 +3,7 @@ package com.metacrazie.chat.ui;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -26,6 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.metacrazie.chat.MainActivity;
 import com.metacrazie.chat.R;
 import com.metacrazie.chat.tasks.SyncTask;
 
@@ -41,6 +44,7 @@ public class SettingsActivity extends AppCompatActivity {
     private static final String TAG = SettingsActivity.class.getSimpleName();
 
     private Switch mThemeSwitch;
+    private Switch mTimeSwitch;
     private AppCompatButton mChangeDisplayName;
     private AppCompatButton mSignout;
 
@@ -56,6 +60,14 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences sharedPrefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        boolean isSet = sharedPrefs.getBoolean("switch_theme", false);
+
+        if (isSet){
+            setTheme(R.style.AppTheme_Dark);
+        }else{
+            setTheme(R.style.AppTheme);
+        }
         setContentView(R.layout.settings);
         setTitle(getString(R.string.action_settings));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -63,8 +75,12 @@ public class SettingsActivity extends AppCompatActivity {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         mThemeSwitch = (Switch)findViewById(R.id.switch_theme);
+        mTimeSwitch = (Switch)findViewById(R.id.switch_time);
         mChangeDisplayName = (AppCompatButton)findViewById(R.id.btn_change_username);
         mSignout = (AppCompatButton)findViewById(R.id.btn_signout);
+
+        mTimeSwitch.setChecked(sharedPrefs.getBoolean("switch_time", false));
+        mThemeSwitch.setChecked(sharedPrefs.getBoolean("switch_theme", false));
 
         mChangeDisplayName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +97,39 @@ public class SettingsActivity extends AppCompatActivity {
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
+            }
+        });
+
+        mThemeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (mTimeSwitch.isChecked()){
+                    SharedPreferences.Editor editor = getSharedPreferences("prefs", MODE_PRIVATE).edit();
+                    editor.putBoolean("switch_theme", true);
+                    editor.apply();
+
+                }else
+                {
+                    SharedPreferences.Editor editor = getSharedPreferences("prefs", MODE_PRIVATE).edit();
+                    editor.putBoolean("switch_theme", false);
+                    editor.apply();
+                }
+            }
+        });
+
+        mTimeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (mTimeSwitch.isChecked()){
+                    SharedPreferences.Editor editor = getSharedPreferences("prefs", MODE_PRIVATE).edit();
+                    editor.putBoolean("switch_time", true);
+                    editor.apply();
+                }else
+                {
+                    SharedPreferences.Editor editor = getSharedPreferences("prefs", MODE_PRIVATE).edit();
+                    editor.putBoolean("switch_time", false);
+                    editor.apply();
+                }
             }
         });
 

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -64,14 +65,7 @@ public class MainChatActivity extends AppCompatActivity
     private String TAG= MainChatActivity.class.getSimpleName();
 
     private ListView mListView;
-    private Button mAddRoomBtn;
-    private EditText mRoomEditText;
-
-    private String pref="pref";
-
     private TextView mNavHeaderText;
-
-    private ArrayAdapter<String> mArrayAdapter;
     private ChatRoomAdapter mChatAdapter;
 
     private String roomName;
@@ -79,18 +73,25 @@ public class MainChatActivity extends AppCompatActivity
     private ArrayList<String> list_of_messages = new ArrayList<>();
 
     private String name;
-    private String REGISTERED_USERS= "registered_users";
     private String CONVERSATIONS = "conversations";
     private String CHAT_USERS="chart_auth_users";
 
     private UserDBHandler dbHandler = new UserDBHandler(this);
-
     private DatabaseReference root= FirebaseDatabase.getInstance().getReference().child(CONVERSATIONS);
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences sharedPrefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        boolean isSet = sharedPrefs.getBoolean("switch_theme", false);
+
+        if (isSet){
+            setTheme(R.style.AppTheme_Dark_NoActionBar);
+        }else{
+            setTheme(R.style.AppTheme_NoActionBar);
+        }
         setContentView(R.layout.activity_main_chat);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -115,13 +116,8 @@ public class MainChatActivity extends AppCompatActivity
 
         FloatingActionButton groupFab =  (FloatingActionButton)findViewById(R.id.group_fab);
         FloatingActionButton privateFab = (FloatingActionButton)findViewById(R.id.private_fab);
-        groupFab.setTitle("Start Group Chat");
-        privateFab.setTitle("Start Private Chat");
-
-/*
-        mArrayAdapter = new ArrayAdapter<String>(this, R.layout.chat_room_item, list_of_rooms);
-        mListView.setAdapter(mArrayAdapter);
-*/
+        groupFab.setTitle(getString(R.string.group_chat));
+        privateFab.setTitle(getString(R.string.private_chat));
 
         //custom adapter with data from content provider using loader
 
@@ -134,7 +130,9 @@ public class MainChatActivity extends AppCompatActivity
         }else
             filler.setVisibility(View.INVISIBLE);
 
-        final FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+        final FirebaseUser user= FirebaseAuth
+                .getInstance()
+                .getCurrentUser();
         assert user != null;
         name = user.getDisplayName();
         Log.d(TAG, name);
@@ -151,7 +149,7 @@ public class MainChatActivity extends AppCompatActivity
                         .setTitle(getString(R.string.alert_new_group_message))
                         .setMessage(getString(R.string.message_group_chat))
                         .setView(groupEditText)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(getString(R.string.alert_ok), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 Map<String, Object> map=new HashMap<String, Object>();
@@ -163,7 +161,7 @@ public class MainChatActivity extends AppCompatActivity
                                 root.child(groupEditText.getText().toString()).child(CHAT_USERS).updateChildren(users);
 
                             }
-                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        }).setNegativeButton(getString(R.string.alert_cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
@@ -261,7 +259,7 @@ public class MainChatActivity extends AppCompatActivity
                 return null;
         }
         else
-            return "random";
+            return null;
 
     }
 
@@ -328,8 +326,6 @@ public class MainChatActivity extends AppCompatActivity
         int id = item.getItemId();
         if (isNetworkAvailable()) {
             if (id == R.id.nav_chat) {
-
-                //TODO check which activity is running
 
                 Intent intent = new Intent(MainChatActivity.this, MainChatActivity.class);
                 startActivity(intent);

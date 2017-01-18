@@ -11,7 +11,6 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:text="Name"
             style="@style/HeaderTextStyle"
             android:textStyle="bold"
             android:paddingBottom="@dimen/padding_5"
@@ -26,14 +25,12 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:text="User: "
                 android:id="@+id/search_user"
                 android:textColor="@color/colorAccent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:text="Message matching"
                 android:id="@+id/search_msg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

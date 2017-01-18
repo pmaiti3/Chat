@@ -26,32 +26,15 @@ import java.util.List;
 public class WidgetService extends RemoteViewsService{
 
     private static final String TAG = WidgetService.class.getSimpleName();
-    private String REGISTERED_USERS = "registered_users";
-    private String CONVERSATIONS = "conversations";
-    private String MESSAGES = "messages";
-    public static final String PROVIDER_NAME = "com.metacrazie.chat.data.DataProvider";
-    public static final String URL = "content://"+PROVIDER_NAME+"/user_table";
-    public static final Uri CONTENT_URI = Uri.parse(URL);
-    private int count = 0;
-
-    private StarListAdapter mAdapter;
-
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         return new WidgetItemRemoteView(this.getApplicationContext(), intent);
     }
 
-
-
     class WidgetItemRemoteView implements RemoteViewsService.RemoteViewsFactory {
         Context mContext;
-        Cursor mCursor;
-        CursorLoader mCursorLoader;
-        private ArrayList<String> userList = new ArrayList<>();
-        private ArrayList<String> messageList = new ArrayList<>();
         Intent mIntent;
-        DatabaseReference root = FirebaseDatabase.getInstance().getReference().child(CONVERSATIONS);
 
         public UserDBHandler mDBHelper;
 
@@ -63,46 +46,9 @@ public class WidgetService extends RemoteViewsService{
             mDBHelper = new UserDBHandler(mContext);
         }
 
-        private void populateListView() {
-            for (int i = 0; i < getCount(); i++) {
-                userList.add("User " + i);
-                messageList.add("Message by user " + i);
-                Log.d(TAG, "Added list items");
-            }
-
-        }
-
         @Override
         public void onCreate() {
-
-            //    populateListView();
-
-/*            mCursor = getContentResolver().query(CONTENT_URI,
-                    new String[]{DataTable.KEY_UID, DataTable.KEY_USERNAME, DataTable.KEY_EMAIL, DataTable.KEY_LAST_MESSAGE},
-                    DataTable.KEY_USERNAME+"=?",
-                    new String[]{DataTable.KEY_USERNAME},
-                    "");
-
-            if (mCursor == null) {
-                Log.d(TAG, "null cursor");
-            }
-            else if (mCursor.getCount() < 1) {
-                Log.d(TAG, "cursor value less than 1");
-            }
-            else {
-
-                while (mCursor.moveToNext()) {
-                    userList.add(mCursor.getString(mCursor.getColumnIndex(DataTable.KEY_USERNAME)));
-                    Log.d(TAG, mCursor.getString(mCursor.getColumnIndex(DataTable.KEY_USERNAME)));
-                    messageList.add(mCursor.getString(mCursor.getColumnIndex(DataTable.KEY_LAST_MESSAGE)));
-                    Log.d(TAG, mCursor.getString(mCursor.getColumnIndex(DataTable.KEY_LAST_MESSAGE)));
-                }
-                }
-*/
-
             allUsers = mDBHelper.getAllUsers();
-
-
         }
 
         @Override

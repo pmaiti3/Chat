@@ -1,5 +1,6 @@
 package com.metacrazie.chat.ui;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.metacrazie.chat.R;
@@ -15,6 +16,19 @@ public class AboutActivity extends LibsActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
+
+        Libs.ActivityStyle style;
+        Libs.ActivityStyle style1 = Libs.ActivityStyle.LIGHT_DARK_TOOLBAR;
+        Libs.ActivityStyle style2 = Libs.ActivityStyle.DARK;
+
+        SharedPreferences sharedPrefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        boolean isSet = sharedPrefs.getBoolean("switch_theme", false);
+
+        if (isSet){
+            style = style2;
+        }else {
+            style = style1;
+        }
         setIntent(new LibsBuilder()
                 .withAboutIconShown(true)
                 .withActivityTitle(getString(R.string.nav_about))
@@ -22,7 +36,7 @@ public class AboutActivity extends LibsActivity {
                 .withAboutVersionShown(true)
                 .withAboutDescription(getString(R.string.credits1))
                 //provide a style (optional) (LIGHT, DARK, LIGHT_DARK_TOOLBAR)
-                .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR).intent(this));
+                .withActivityStyle(style).intent(this));
                 //start the activity
         super.onCreate(savedInstanceState);
     }

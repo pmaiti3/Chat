@@ -45,14 +45,8 @@ public class Contacts extends AppCompatActivity {
 
     private static final String TAG = Contacts.class.getSimpleName();
 
-    private ImageView mProfileImage;
-    private TextView mUsername;
-    private TextView mEmail;
-    private ImageView mAddContact;
-
     private ArrayList<String> mUsernameList = new ArrayList<>();
     private ArrayList<String> mEmailList = new ArrayList<>();
-    private ArrayList<String> mProfileImageList = new ArrayList<>();
 
     private ListView mListView;
     private ContactsListAdapter mContactsListAdapter;
@@ -62,14 +56,23 @@ public class Contacts extends AppCompatActivity {
     private String CHAT_USERS="chart_auth_users";
     private String pref="pref";
     private String startNewChatUser;
-    private String FRIENDS = "friends";
     private DatabaseReference newRoom = FirebaseDatabase.getInstance().getReference().child(CONVERSATIONS);
     private DatabaseReference root = FirebaseDatabase.getInstance().getReference().child(REGISTERED_USERS);
-    private DatabaseReference userRoot;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        SharedPreferences sharedPrefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        boolean isSet = sharedPrefs.getBoolean("switch_theme", false);
+
+        if (isSet){
+            setTheme(R.style.AppTheme_Dark);
+        }else{
+            setTheme(R.style.AppTheme);
+        }
+
         setContentView(R.layout.contacts);
         setTitle(getString(R.string.nav_friends));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -79,8 +82,6 @@ public class Contacts extends AppCompatActivity {
         mListView = (ListView)findViewById(R.id.contacts_listview);
         mContactsListAdapter = new ContactsListAdapter(this, mUsernameList, mEmailList);
         mListView.setAdapter(mContactsListAdapter);
-
-
 
         root.addChildEventListener(new ChildEventListener() {
             @Override
@@ -115,7 +116,6 @@ public class Contacts extends AppCompatActivity {
 
                 startNewChatUser = ((TextView) view.findViewById(R.id.contacts_username)).getText().toString();
                 final String userEmail= ((TextView)view.findViewById(R.id.contacts_email)).getText().toString();
-                Log.d(TAG, "start new chat with user: "+startNewChatUser);
 
                 if (!isGroup){
                 final UserDBHandler dbHandler = new UserDBHandler(getApplication());
@@ -131,8 +131,6 @@ public class Contacts extends AppCompatActivity {
 
 
                                     if (!dbHandler.hasRoom(roomName)){
-
-                                        Log.d(TAG, "no existing room, add new room");
 
                                         Map<String, Object> map = new HashMap<String, Object>();
                                         map.put(roomName, "");

@@ -70,6 +70,16 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences sharedPrefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        boolean isSet = sharedPrefs.getBoolean("switch_theme", false);
+
+        if (isSet){
+            setTheme(R.style.AppTheme_Dark);
+        }else{
+            setTheme(R.style.AppTheme);
+        }
+
         setContentView(R.layout.login_activity);
 
         mEmailField = (EditText)findViewById(R.id.email);
@@ -89,9 +99,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = firebaseAuth.getCurrentUser();
                 if(user!=null){
-                    //user signed in
-                    //TODO get info and pass to chat screen
-                    //activate signout
 
                     if(user.isEmailVerified()){
 
@@ -113,13 +120,16 @@ public class LoginActivity extends AppCompatActivity {
                                                 map.put(displayName, userList.push().getKey());
                                                 userList.updateChildren(map);
 
-                                                DatabaseReference userDetails = FirebaseDatabase.getInstance().getReference().child(REGISTERED_USERS).child(displayName);
+                                                DatabaseReference userDetails = FirebaseDatabase
+                                                        .getInstance()
+                                                        .getReference()
+                                                        .child(REGISTERED_USERS)
+                                                        .child(displayName);
 
                                                 Map<String, Object> map2 = new HashMap<String, Object>();
                                                 map2.put("username", displayName);
                                                 map2.put("email",mEmail);
                                                 map2.put("uid", user.getUid());
-                                                Log.d(TAG, "details added to firebase");
                                                 userDetails.updateChildren(map2);
                                                 Log.d(TAG, "User profile updated.");
                                                 isUserProfileUpdated = true;
@@ -132,8 +142,6 @@ public class LoginActivity extends AppCompatActivity {
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     Log.d(TAG, "addValueEventListener called");
                                     if (isUserProfileUpdated) {
-                                        Log.d(TAG, "child added to userlist");
-                                        Log.d(TAG, "displayname verified not null");
                                         Log.d(TAG, "Starting chat screen");
 
                                         UsernameAsyncTask mTask = new UsernameAsyncTask();
@@ -168,8 +176,6 @@ public class LoginActivity extends AppCompatActivity {
 
                     Log.d(TAG, "user signed in: "+user.getUid());
                 }else{
-                    //user signed out
-                    //TODO start sign in
                     Log.d(TAG, "user not signed in");
                 }
                 if (flag==0)
@@ -234,7 +240,7 @@ public class LoginActivity extends AppCompatActivity {
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                            Toast.makeText(LoginActivity.this, getString(R.string.auth_fail),
                                     Toast.LENGTH_SHORT).show();
                         }
                         else
@@ -267,7 +273,7 @@ public class LoginActivity extends AppCompatActivity {
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithEmail", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                            Toast.makeText(LoginActivity.this, getString(R.string.auth_fail),
                                     Toast.LENGTH_SHORT).show();
                         }
 
@@ -289,19 +295,19 @@ public class LoginActivity extends AppCompatActivity {
         boolean valid=true;
 
         if(TextUtils.isEmpty(mNameField.getText())){
-            mNameField.setError("Required");
+            mNameField.setError(getString(R.string.required));
             valid=false;
         }else {
             mNameField.setError(null);
         }
         if(TextUtils.isEmpty(mEmail)){
-            mEmailField.setError("Required");
+            mEmailField.setError(getString(R.string.required));
             valid=false;
         }else {
             mEmailField.setError(null);
         }
         if (TextUtils.isEmpty(mPassword)){
-            mPasswordField.setError("Required");
+            mPasswordField.setError(getString(R.string.required));
             valid=false;
         }else {
             mPasswordField.setError(null);
